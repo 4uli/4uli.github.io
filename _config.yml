@@ -103,9 +103,9 @@ analytics:
 author:
   name             : "4uli"
   avatar           : "/assets/images/avatar1.png"
-  bio              : "Pentester, CTF player<br>HackTheBox ATeam"
+  bio              : "Pentester<br>Novato"
   location         : "República Dominicana"
-  email            : "info@snowscan.io"
+  email            : 
   uri              :
   home             : # null (default), "absolute or relative url to link to author home"
   bitbucket        :
@@ -114,11 +114,11 @@ author:
   flickr           :
   facebook         :
   foursquare       :
-  github           : "slemire"
+  github           : "4uli"
   gitlab           :
   google_plus      :
-  keybase          : "snowscan"
-  instagram        :
+  keybase          : 
+  instagram        : "auli.chill"
   lastfm           :
   linkedin         : # "john-doe-12345678" (the last part of your profile url, e.g. https://www.linkedin.com/in/john-doe-12345678)
   pinterest        :
@@ -126,7 +126,7 @@ author:
   stackoverflow    : # "123456/username" (the last part of your profile url, e.g. https://stackoverflow.com/users/123456/username)
   steam            : # "steamId" (the last part of your profile url, e.g. https://steamcommunity.com/id/steamId/)
   tumblr           :
-  twitter          : "snowscan"
+  twitter          : "AuliTV_"
   vine             :
   weibo            :
   xing             :
