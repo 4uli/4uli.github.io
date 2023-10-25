@@ -6,10 +6,10 @@ classes: wide
 header:
   teaser: /assets/images/slae32.png
 categories:
-  - slae
+  - sqli
   - infosec
 tags:
-  - slae
+  - vulhub
   - assembly
   - tcp bind shellcode
 ---
