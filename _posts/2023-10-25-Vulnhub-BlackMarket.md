@@ -1,6 +1,6 @@
 ---
 layout: single
-title: BlackMarket
+title: Vulnhub - BlackMarket
 date: 25/10/2023
 classes: wide
 header:
@@ -61,7 +61,7 @@ _____
 
 
 El servidor web en el :80 es para loguearnos.
-![[/assets/images/blackmarket/Pasted image 20231025094113.png]]
+![](/assets/images/blackmarket/Pasted image 20231025094113.png)
 Que en el código fuente nos da una pista.
 # Enumeración de usuarios SSH.
 ___
