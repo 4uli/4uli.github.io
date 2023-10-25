@@ -12,6 +12,7 @@ tags:
   - ssh username enumeration
   - sudo abuse
   - linux
+  - fácil
 ---
 
 Para vulnerar la máquina BlackMarket, debemos hacer un reconocimiento de puertos, enumeración de servicios & posibles usuarios con las flags que se nos van dejando mediante avanzamos a la máquina, para luego con esas credenciales entrar en un panel el cual es vulnerable a SQLI, allí obtendremos las credenciales para loguearnos en el panel del mercado negro, y seguiremos obteniendo pistas hasta que finalmene ingresemos a la máquina & escalemos privilegios.
@@ -68,6 +69,8 @@ El servidor web en el :80 es para loguearnos.
 ![](/assets/images/blackmarket/Pasted image 20231025094113.png)
 
 Que en el código fuente nos da una pista.
+
+
 ____
 # **Enumeración de usuarios SSH.**
 ___
@@ -100,6 +103,7 @@ Luego de ingresar con las credenciales nicky a FTP, habrá un único directorio 
 
 El cual dentro tendrá otra flag con una pista para entrar a otro directorio.
 
+
 ___
 # **Inyecciones SQL.**
 ___
@@ -118,7 +122,9 @@ Luego ir inyectando query para aprovecharnos, descubriremos los siguientes valor
 En el cual vemos qué las contraseñas están hasheadas con 32bytes, lo que probablemente sea md5sum.
 
 Por lo qué buscamos un recurso para desencriptar ver el valor de este Hash, por ejemplo el recurso web hashes.com, el cual al poner el HASH nos dará en texto claro la contraseña de admin.
-____
+
+
+_____
 # **Inicio de sesión con credenciales válidas.**
 _______
 
@@ -128,6 +134,8 @@ Al tener estas credenciales de admin, sí nos vamos al login del mercado negro, 
 ![](/assets/images/blackmarket/Pasted image 20231025103811.png)
 
 Lo cual es una flag con una pista de credenciales.
+
+
 _____
 # **inicio de sesión squirrelmail**
 ______
@@ -150,6 +158,8 @@ Una vez el mensaje claro, veremos que nos dará una pista con una ruta y a la ve
 
 
 Sí dicha imagen no las bajamos en local, para hacerle un "strings", al final veremos un campo PASS con un contenido en Decimal, cuyo decimal podemos convertir en hexadecimal para luego convertirlo en texto claro, con el recurso rapidtables.com, una vez en texto claro tendremos unas credenciales.
+
+
 ____
 # **Fuzzing al recurso "kgbbackdoor"**
 _______
@@ -164,7 +174,9 @@ Descubriremos un nuevo recurso .php en el **/kgbbackdoor/**
 y aquí deberíamos poner las credenciales que obtuvimos de la imagen, una vez puesta las credenciales correctas tendríamos una webShell, en la cual podemos entablarnos una Reverse Shell
 
 ![](/assets/images/blackmarket/Pasted image 20231025110033.png)
-____
+
+
+______
 # **Escalada de Privilegios.**
 _____
 
