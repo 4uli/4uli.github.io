@@ -92,7 +92,8 @@ Una vez con el diccionario de palabras creado, con Hydra hacemos un ataque de fu
 ![](/assets/images/blackmarket/Pasted image 20231025101306.png)
 
 Obtendríamos la contraseña de Nicky para FTP.
-____
+
+_______
 # **Reconocimiento de FTP**
 _______
 
