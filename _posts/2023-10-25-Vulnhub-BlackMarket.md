@@ -93,7 +93,6 @@ Una vez con el diccionario de palabras creado, con Hydra hacemos un ataque de fu
 
 Obtendríamos la contraseña de Nicky para FTP.
 
-# **Reconocimiento de FTP**
 
 Luego de ingresar con las credenciales nicky a FTP, habrá un único directorio que tendrá en el subdirectorio un .txt, el cual nos bajamos en local.
 
