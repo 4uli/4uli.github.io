@@ -1,6 +1,6 @@
 ---
 layout: single
-title: Vulnhub - BlackMarket
+title: BlackMarket - Vulnhub
 date: 25/10/2023
 classes: wide
 header:
