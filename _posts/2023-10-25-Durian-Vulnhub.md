@@ -7,7 +7,7 @@ header:
   teaser:
 
 tags:
-  - LFI to RCE - Abusing /proc/self/fd/X + Log Poisoning
+  - LFI > RCE - Abusing /proc/self/fd/X + Log Poisoning
   - Abusing capabilities (cap_setuid+ep on gdb binary)
   - Web Enumeration
   - fácil
