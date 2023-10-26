@@ -7,10 +7,11 @@ header:
   teaser:
 
 tags:
-  - LFI > RCE
-  - LFI to RCE - Abusing /proc/self/fd/X + Log Poisoning
+  - LFI > RCE - Abusing /proc/self/fd/X + Log Poisoning
   - Abusing capabilities (cap_setuid+ep on gdb binary)
   - Web Enumeration
+  - fácil
+  - linux
 ---
 
 Para poder vulnerar esta máquina primero debemos hacer una enumeración web, en la cual obtendremos la dirección de un recurso PHP, del cual nos podemos aprovechar para poder llevar a cabo el LFI, a través de ahí contaminar el log de acceso de apache para poder ejecutar nuestro código malicioso PHP y convertirlo en un RCE, entablandonos una reverse shell para posterior a ello escalar privilegios,.
