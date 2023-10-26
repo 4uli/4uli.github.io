@@ -1,4 +1,17 @@
+---
+layout: single
+title: Durian - Vulnhub
+date: 25/10/2023
+classes: wide
+header:
+  teaser:
 
+tags:
+  - LFI
+  - LFI to RCE - Abusing /proc/self/fd/X + Log Poisoning
+  - Abusing capabilities (cap_setuid+ep on gdb binary) [Privilege Escalation]
+  - Web Enumeration
+---
 
 
 # PortScan
