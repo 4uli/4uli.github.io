@@ -17,6 +17,10 @@ tags:
   - linux
 ---
 
+Para vulnerar esta máquina, debemos hacer fuzzing en la IP de la máquina víctima para descubrir el directorio del CMS, también debemos enumerar el CMS, para tener una pista, luego de enumerar bien el directorio del CMS descubriremos un el recurso del cual podemos aprovecharnos para obtener usuarios válidos mediante un ataque de fuerza bruta con un script en bash, una vez hecho esto aprovecharnos del plugin qué tiene el CMS para subir un archivo malicioso, del cual nos aprovecharemos para llevar a cabo un RCE.
+
+
+
 # PortScan
 ____
 
