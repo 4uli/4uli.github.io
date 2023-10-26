@@ -7,11 +7,13 @@ header:
   teaser:
 
 tags:
-  - LFI
+  - LFI > RCE
   - LFI to RCE - Abusing /proc/self/fd/X + Log Poisoning
-  - Abusing capabilities (cap_setuid+ep on gdb binary) [Privilege Escalation]
+  - Abusing capabilities (cap_setuid+ep on gdb binary)
   - Web Enumeration
 ---
+
+Para poder vulnerar esta máquina primero debemos hacer una enumeración web, en la cual obtendremos la dirección de un recurso PHP, del cual nos podemos aprovechar para poder llevar a cabo el LFI, a través de ahí contaminar el log de acceso de apache para poder ejecutar nuestro código malicioso PHP y convertirlo en un RCE, entablandonos una reverse shell para posterior a ello escalar privilegios,.
 
 
 # PortScan
@@ -34,7 +36,7 @@ MAC Address: 00:0C:29:CC:43:7D (VMware)
 
 # Sitio Web
 
-![[Pasted image 20231025182531.png]]
+![](/assets/images/durian/Pasted image 20231025182531.png)
 
 # Fuzzing de Sitio Web.
 
@@ -54,7 +56,7 @@ Progress: 90087 / 220561 (40.84%)             [ERROR] 2023/10/25 18:26:31 [!] Ge
 
 Una vez vayamos al directorio "/cgi-data" veremos un recurso **.PHP** que dentro tendrá en comentarios como funciona el código.
 
-![[Pasted image 20231025182939.png]]
+![](/assets/images/durian/Pasted image 20231025182939.png)
 
 es decir, que al poner el parámetro "**?file=**"  podemos aprovecharnos para hacer un LFI.
 
@@ -65,7 +67,7 @@ Hacemos una petición para poder identificarla en el log.
 curl -s -X GET "http://192.168.204.153/probando" -H "User-Agent: <?php system('whoami'); ?>"
 ```
 
-![[Pasted image 20231025184632.png]]
+![](/assets/images/durian/Pasted image 20231025184632.png)
 Hemos contaminado el Log, y también está ejecutando el código **.PHP**, por lo que podríamos subir un recurso qué podremos controlar desde la URL para entablarnos una reverse shell.
 
 # BurpSuite 
@@ -74,15 +76,15 @@ Nos aprovechamos del proxy Burpsuite, para agregar el código .PHP malicioso en 
 
 Interceptamos esta petición:
 
-![[Pasted image 20231025185034.png]]
+![](/assets/images/durian/Pasted image 20231025185034.png)
 
 Para modificar el "**User-Agent:**" desde el **Burpsuite** con el código .PHP malicioso qué deseemos, en este caso unos para controlar el código que queramos ejecutar desde la URL:
 
-![[Pasted image 20231025185353.png]]
+![](/assets/images/durian/Pasted image 20231025185353.png)
 
 Para controlar desde la URL la ejecución de comando, como podemos ver:
 
-![[Pasted image 20231025185808.png]]
+![](/assets/images/durian/Pasted image 20231025185808.png]])
 Y desde la URL ya podríamos entablarnos una Reverse Shell.
 
 # Escalada de Privilegios.
@@ -99,7 +101,7 @@ Vemos que está la la "**cap_setuid+ep**", qué investigando en el recurso [GTFO
 gdb -nx -ex 'python import os; os.setuid(0)' -ex '!bash' -ex quit
 ```
 
-![[Pasted image 20231025195554.png]]
+![](/assets/images/durian/Pasted image 20231025195554.png)
 
 
 
