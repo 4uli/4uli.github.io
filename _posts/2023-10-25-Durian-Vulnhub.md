@@ -18,6 +18,8 @@ Para poder vulnerar esta máquina primero debemos hacer una enumeración web, en
 
 
 # PortScan
+__________
+
 
 ```
 nmap -sT -p22,80,7080,8088 192.168.204.152
@@ -36,10 +38,12 @@ MAC Address: 00:0C:29:CC:43:7D (VMware)
 
 
 # Sitio Web
+_______
 
 ![](/assets/images/durian/Pasted image 20231025182531.png)
 
 # Fuzzing de Sitio Web.
+_______
 
 ```
 gobuster dir -u http://192.168.204.152 -w /usr/share/SecLists/Discovery/Web-Content/directory-list-2.3-medium.txt -t 20 --add-slash
@@ -62,6 +66,7 @@ Una vez vayamos al directorio "/cgi-data" veremos un recurso **.PHP** que dentro
 es decir, que al poner el parámetro "**?file=**"  podemos aprovecharnos para hacer un LFI.
 
 # LFI > Log Poisoning
+_________
 
 Hacemos una petición para poder identificarla en el log.
 ```
@@ -69,9 +74,12 @@ curl -s -X GET "http://192.168.204.153/probando" -H "User-Agent: <?php system('w
 ```
 
 ![](/assets/images/durian/Pasted image 20231025184632.png)
+
+
 Hemos contaminado el Log, y también está ejecutando el código **.PHP**, por lo que podríamos subir un recurso qué podremos controlar desde la URL para entablarnos una reverse shell.
 
 # BurpSuite 
+_________
 
 Nos aprovechamos del proxy Burpsuite, para agregar el código .PHP malicioso en el recurso que subiremos, para luego poder desde la URL poder controlar el comando, volviéndolo así un RCE.
 
@@ -89,6 +97,7 @@ Para controlar desde la URL la ejecución de comando, como podemos ver:
 Y desde la URL ya podríamos entablarnos una Reverse Shell.
 
 # Escalada de Privilegios.
+_______
 
 Buscamos capabilites.
 ```
