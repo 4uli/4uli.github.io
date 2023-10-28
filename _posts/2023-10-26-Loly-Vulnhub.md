@@ -4,7 +4,8 @@ title: Loly - Vulnhub
 date: 26/10/2023
 classes: wide
 header:
-  teaser:
+  teaser_home_page: true
+  icon: /assets/images/vulnhub.png
 
 tags:
   - Web Enumeration
