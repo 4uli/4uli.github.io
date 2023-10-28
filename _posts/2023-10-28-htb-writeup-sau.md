@@ -65,7 +65,6 @@ Debemos tener todas las check's seleccionados, y en la URL indicar el localhost 
 
 Podemos ver que en el **":80"** está corriendo un **Mailtrail** con versión **0.53**, sí indagamos en busca de vulnerabilidades para este este aplicativo encontraremos qué podemos llevar a cabo un **RCE**, como sé explica en [éste artículo](https://securitylit.medium.com/exploiting-maltrail-v0-53-unauthenticated-remote-code-execution-rce-66d0666c18c5), y sí indagamos más encontraremos exploit para aprovecharnos de esta vulnerabilidad para otorgarnos una Reverse Shell, un script montado en python, a continuación se dejará el script utilizado.
 ```python
-```py
 import sys;
 import os;
 import base64;
