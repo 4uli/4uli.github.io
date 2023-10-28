@@ -5,7 +5,7 @@ date: 25/10/2023
 classes: wide
 header:
   teaser:
-  icon: /assets/images/hackthebox.webp
+  icon: /assets/images/vulnhub.webp
 tags:
   - LFI > RCE - Abusing /proc/self/fd/X + Log Poisoning
   - Abusing capabilities (cap_setuid+ep on gdb binary)
