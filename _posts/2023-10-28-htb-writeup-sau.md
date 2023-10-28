@@ -1,6 +1,7 @@
 ---
 layout: single
 title: Sau - Hack The Box
+excerpt: "En esta máquina nos aprovecharemos de la vulnerabilidad del Mailtrail v0.53 para llevar a cabo un CSRF, en el cual aprovecharemos para poder ver qué servicio corren en puertos que externamente no tenemos acceso, una vez identificamos qué ahí allí nos aprovecharemos para explotar dicho servicio web que externamente no teníamos acceso & convertirlo en un RCE otorgándonos una Reverse Shell"
 date: 2023-10-28
 classes: wide
 header:
