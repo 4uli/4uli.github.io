@@ -5,7 +5,7 @@ date: 26/10/2023
 classes: wide
 header:
   teaser_home_page: true
-  icon: /assets/images/vulnhub.png
+  icon: /assets/images/vulnhub.webp
 
 tags:
   - Web Enumeration
