@@ -5,9 +5,7 @@ excerpt: "En esta máquina nos aprovecharemos de la vulnerabilidad del Mailtrail
 date: 2023-10-28
 classes: wide
 header:
-  teaser: /assets/images/htb-writeup-sau/sau_logo.png
-  teaser_home_page: true
-  icon: /assets/images/hackthebox.webp
+  icon: /assets/images/vulnhub.webp
 categories:
   - hackthebox
 tags:  
