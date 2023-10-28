@@ -10,14 +10,12 @@ header:
   icon: /assets/images/hackthebox.webp
 categories:
   - hackthebox
-  - infosec
 tags:  
-  - rsync
-  - encfs
-  - squid
-  - xpath
-  - CVE-2020-11108
-  - command injection
+  - LFI
+  - RCE
+  - CSRF
+  - abuso sudoers
+  - CVE-2023–27163
 ---
 
 
