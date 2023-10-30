@@ -25,6 +25,7 @@ Para resolver esta máquina nos aprovechamos del código fuente del servicio web
 
 
 # PortScan
+_______
 
 ```
 nmap -sCV -p22,80 -oN targeted 10.10.11.219
@@ -57,6 +58,7 @@ Service detection performed. Please report any incorrect results at https://nmap
 ```
 
 # Sitio Web
+________
 
 
 ![](/assets/images/htb-writeup-sau/Pasted image 20231030160138.png)
@@ -112,6 +114,7 @@ En la cual al convertirla a texto plano encontraríamos las credenciales de **em
 
 
 # Escalada de Privilegios
+_________
 
 
 Usamos **pspy64** para buscar posibles brechas qué podamos aprovechar para escalar nuestro privilegios a Root.
