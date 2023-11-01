@@ -15,6 +15,7 @@ tags:
   - Injection LaTeX > LFI
   - pass the hash
   - abusing SUID
+  - Linux
 ---
 
 ![](/assets/images/htb-writeup-topology/topology_logo.png)
