@@ -11,12 +11,10 @@ header:
 categories:
   - hackthebox
 tags:
-  - Enumeration Web (/.git)
-  - file upload abuse
-  - CVE-2022-44268
-  - Arbitrary file read
-  - LFI
-  - abusing scripting bash
+  - Injection LaTeX
+  - Injection LaTeX > LFI
+  - pass the hash
+  - abusing SUID
 ---
 
 ![](/assets/images/htb-writeup-topology/topology_logo.png)
