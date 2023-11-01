@@ -16,7 +16,6 @@ tags:
   - pass the hash
   - abusing SUID
   - Linux
-  - easy
 ---
 
 ![](/assets/images/htb-writeup-topology/topology_logo.png)
