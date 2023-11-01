@@ -75,7 +75,7 @@ Y nos leerá el archivo indicado, por ende estamos llevando a cabo una inyecció
 
 ![](/assets/images/htb-writeup-topology/Pasted image 20231101120131.png)
 
-![]/assets/images/htb-writeup-topology/(Pasted image 20231101120525.png)
+![](/assets/images/htb-writeup-topology/Pasted image 20231101120525.png)
 
 Encontraríamos las credenciales de lo que es un usuario válido del sistema (ya qué al leer el "/etc/passwd" anteriormente estaba), por lo que podríamos aprovecharnos de esto para conectarnos a través de SSH, pero primero debemos desencriptar el hash de la contraseña o también podríamos aplicar una comparativa con la herramienta " **John** the Ripper" y un diccionario, para qué compare el hash y las contraseñas del diccionario.
 
