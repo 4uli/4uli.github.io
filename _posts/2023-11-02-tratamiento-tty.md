@@ -4,7 +4,7 @@ title: Tratamiento TTY
 date: 2023-11-02
 classes: wide
 header:
-  teaser: /assets/images/tratamiento-tty-logo.webp
+  teaser: /assets/images/tratamiento-tty-logo.png
 categories:
   - tutorial
 tags:
