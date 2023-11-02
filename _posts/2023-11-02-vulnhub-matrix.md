@@ -1,4 +1,3 @@
-
 ---
 layout: single
 title: Matrix - Vulnhub
@@ -17,6 +16,7 @@ tags:
   - fácil
   - linux
 ---
+
 
 Para resolver esta máquina debemos de enumerar todo los puertos, para posterior a ello encontrarnos qué en uno corre un servicio web aparte del principal, qué en el código fuente nos revela una pista para un directorio, el cual contiene un código en Brainfuck, el cual al descodificarlo nos da credenciales válidas para el usuario invitado, pero esas credenciales no son del todo válida, debemos completarla, para conectarnos & luego abusar de un binario vulnerable al SUID.
 
