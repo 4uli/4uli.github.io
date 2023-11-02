@@ -1,4 +1,24 @@
 
+---
+layout: single
+title: Matrix - Vulnhub
+date: 2/11/2023
+classes: wide
+header:
+  teaser_home_page: true
+  icon: /assets/images/vulnhub.webp
+
+tags:
+  - Web Enumeration
+  - filtration source code
+  - brainfuck
+  - brute force SSH
+  - abusing SUID
+  - fácil
+  - linux
+---
+
+Para resolver esta máquina debemos de enumerar todo los puertos, para posterior a ello encontrarnos qué en uno corre un servicio web aparte del principal, qué en el código fuente nos revela una pista para un directorio, el cual contiene un código en Brainfuck, el cual al descodificarlo nos da credenciales válidas para el usuario invitado, pero esas credenciales no son del todo válida, debemos completarla, para conectarnos & luego abusar de un binario vulnerable al SUID.
 
 
 
@@ -36,7 +56,7 @@ __________
 
 
 
-![[Pasted image 20231102110631.png]]
+![](assets/images/vulnhub-writeup-matrix/Pasted image 20231102110631.png)
 
 
 Sí analizamos el código fuente no encontraríamos nada interesante, incluso sí hacemos un descubrimiento de nuevas rutas mediante fuzzing con GoBuster encontraremos directorios interesantes.
@@ -45,25 +65,25 @@ Por ende, probamos ver qué hay en el puerto **:31337** y descubriremos otro sit
 
 
 
-![[Pasted image 20231102110927.png]]
+![](assets/images/vulnhub-writeup-matrix/Pasted image 20231102110927.png)
 
 Tendríamos este sitio web qué es muy similar, y sí vemos el código fuente encontraríamos una pista en base64.
 
-![[Pasted image 20231102111014.png]]
+![](assets/images/vulnhub-writeup-matrix/Pasted image 20231102111014.png)
 
 
 Qué al desconvertirla, tendremos una pista en texto claro.
 
-![[Pasted image 20231102111111.png]]
+![](assets/images/vulnhub-writeup-matrix/Pasted image 20231102111111.png)
 
 Lo primero que se me ocurre al leer esto, es verificar sí en dicho servicio web existe algún directorio con ese nombre, y al ponerlo efectivamente existe.
 
-![[Pasted image 20231102111503.png]]
+![](assets/images/vulnhub-writeup-matrix/Pasted image 20231102111503.png)
 
 
 Que cómo vemos en su interior contiene lo que sería un script en **Brainfuck**, qué al decodificarlo nos mostraría un texto plano.
 
-![[Pasted image 20231102111431.png]]
+![](assets/images/vulnhub-writeup-matrix/Pasted image 20231102111431.png)
 
 
 Mostrándonos la contraseña para el usuario invitado, sabiendo que el puerto **:22** está abierto podríamos aprovecharnos de estas credenciales para conectarnos, pero no tenemos los últimos dos dígitos, por lo que podríamos hacer un diccionario con la herramienta "**crunch**" para posterior a ello hacer un ataque de fuerza fuerza bruta al servicio SSH con Hydra.
@@ -87,7 +107,7 @@ hydra -l guest -P passwords.txt ssh://192.x.x.x -t 20 2>/dev/null
 ```
 
 
-![[Pasted image 20231102112702.png]]
+![](assets/images/vulnhub-writeup-matrix/Pasted image 20231102112702.png)
 
 Así obtendríamos las credenciales válidas para el usuario invitado, y ya podemos conectarnos a través de SSH.
 
@@ -105,9 +125,11 @@ ssh guest@192.x.x.x bash
 Ingresaríamos con una Bash, y tan sólo sería darle tratamiento a la TTY. 
 ![Aquí verías como darle tratamiento]()
 
-_____
+
 
 # Escalada de Privilegios
+_____
+
 
 
 Sí hacemos una búsqueda de permisos SUID.
@@ -117,7 +139,7 @@ find / -perm -4000 2>/dev/null
 ```
 
 
-![[Pasted image 20231102113352.png]]
+![](assets/images/vulnhub-writeup-matrix/Pasted image 20231102113352.png)
 
 Encontraríamos que el binario "sudo" tiene permisos SUID como ROOT, así qué tan sólo haciendo un.
 
@@ -127,4 +149,4 @@ sudo bash -p
 
 proporcionaríamos la contraseña del usuario guest y obtendríamos una consola como Root.
 
-![[Pasted image 20231102113437.png]]
+![](assets/images/vulnhub-writeup-matrix/Pasted image 20231102113437.png)
