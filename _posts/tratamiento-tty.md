@@ -1,5 +1,19 @@
 
-
+---
+layout: single
+title: Tratamiento TTY
+date: 2023-11-02
+classes: wide
+header:
+  teaser: /assets/images/tratamiento-tty-logo.webp
+categories:
+  - tutorial
+tags:
+  - tratamiento tty
+  - fix tty
+  - shell
+  - fix reverse shell
+---
 
 
 
