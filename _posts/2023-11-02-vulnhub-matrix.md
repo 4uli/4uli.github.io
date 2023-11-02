@@ -123,7 +123,7 @@ ssh guest@192.x.x.x bash
 ```
 
 Ingresaríamos con una Bash, y tan sólo sería darle tratamiento a la TTY. 
-![Aquí verías como darle tratamiento]()
+![Aquí verías como darle tratamiento](/_posts/2023-11-02-tratamiento-tty.md)
 
 
 
