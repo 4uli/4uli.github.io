@@ -21,6 +21,8 @@ tags:
   - abusing SUID
 ---
 
+Para resolver esta máquina, nos aprovechamos de qué tenemos un backup del código fuente por NFS, para convertirnos en administradores de la página web, obteniendo así un nuevo panel, en el cual podemos exportar los mejores jugadores en formatos específicos, pero lograremos exportarlo en un formato del cual nos podamos aprovechar para llevar a cabo un RFI, obteniendo así una Reverse Shell, posterior aprovecharnos de una clave privada de SHH para conectarnos como un usuario no privilegiado, y finalmente abusar de un script qué podemos ejecutar como ROOT para convertirnos en el mismo.
+
 ![](/assets/images/htb-writeup-clicker/clicker_logo.png)
 
 
