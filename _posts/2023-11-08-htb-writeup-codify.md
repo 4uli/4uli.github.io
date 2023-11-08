@@ -65,7 +65,7 @@ Sí leemos, vemos qué es un sitio web para probar código en Node.js, lo primer
 
 Como vemos nos dice qué está usando una librería **"vm2"**, para evitar el JavaScript & qué también tiene una capa de seguridad para evitar código malicioso, lo primero que se me ocurre es buscar en internet posibles **ByPass** para el vm2, así encontrando este recurso:
 
-[Click aquí para ir al recurso](https://security.snyk.io/vuln/SNYK-JS-VM2-5537100)
+[((Click aquí para ir al recurso))](https://security.snyk.io/vuln/SNYK-JS-VM2-5537100)
 
 El recurso nos proporciona un **PoC** para llevar a cabo una **RCE**, lo probamos en el editor de texto del sitio web.
 
@@ -79,7 +79,7 @@ Nos ponemos en escucha...
 ![](/assets/images/htb-writeup-codify/Pasted image 20231108123251.png)
 
 
-Obtendríamos la Reverse Shell y estaríamos dentro de la máquina, tan sólo quedaría darle tratamiento a la TTY, sino sabes, te recomiendo ver este post.[((Click aquí))]()
+Obtendríamos la Reverse Shell y estaríamos dentro de la máquina, tan sólo quedaría darle tratamiento a la TTY, sino sabes, te recomiendo ver este post.[((Click aquí))](https://4uli.github.io/tratamiento-tty/)
 
 # Escalada de Privilegios #1
 _______
