@@ -1,4 +1,26 @@
+---
+layout: single
+title: Codify - Hack The Box
+excerpt: "Para vulnerar esta máquina ByPasseamos la medidad de seguridad de la biblioteca vim2 donde podemos ejecutar código malicioso NodeJS, pudiendo así llevar a cabo una ejecución Remota de Comandos, aprovechándonos de esto nos entablamos una Reverse Shell para posterior a ello escalar Privilegios con unas credenciales de una base de datos que estarían hasheadas, usamos una herramienta para ver en texto plano las credenciales, por último llevaríamos a cabo una Escalada de Privilegios para convertirnos en ROOT aprovechandonos de un .sh del cual tenemos SUDOERS"
+date: 2023-11-08
+classes: wide
+header:
+  teaser: /assets/images/htb-writeup-codify/codify_logo.png
+  teaser_home_page: true
+  icon: /assets/images/hackthebox.webp
+categories:
+  - hackthebox
+tags:
+  - vm2 Sandbox Bypass
+  - RCE
+  - db creds
+  - password cracking
+  - abusing sudoers
+  - brute force login
 
+---
+
+![](/assets/images/htb-writeup-codify/codify_logo.png)
 
 # PortScan
 
@@ -30,11 +52,11 @@ Nmap done: 1 IP address (1 host up) scanned in 13.50 seconds
 
 # Sitio Web
 
-![[Pasted image 20231108122352.png]]
+![](/assets/images/htb-writeup-codify/Pasted image 20231108122352.png)
 
 Sí leemos, vemos qué es un sitio web para probar código en Node.js, lo primero qué se me ocurre es probar código malicioso JavaScript, pero seguimos indagando un poco en la página, hasta que en la parte izquierda vemos una opción de "**About US**", clickeó allí para ver sí dan algún tipo de información.
 
-![[Pasted image 20231108122528.png]]
+![](/assets/images/htb-writeup-codify/Pasted image 20231108122528.png)
 
 Como vemos nos dice qué está usando una librería **"vm2"**, para evitar el JavaScript & qué también tiene una capa de seguridad para evitar código malicioso, lo primero que se me ocurre es buscar en internet posibles **ByPass** para el vm2, así encontrando este recurso:
 
@@ -42,14 +64,14 @@ https://security.snyk.io/vuln/SNYK-JS-VM2-5537100
 
 El recurso nos proporciona un **PoC** para llevar a cabo una **RCE**, lo probamos en el editor de texto del sitio web.
 
-![[Pasted image 20231108122947.png]]
+![](/assets/images/htb-writeup-codify/Pasted image 20231108122947.png)
 
 Como vemos estamos llevando a cabo una ejecución Remota de Comandos, por lo qué podemos entablarnos una Reverse Shell de manera fácil.
-![[Pasted image 20231108123302.png]]
+![](/assets/images/htb-writeup-codify/Pasted image 20231108123302.png)
 
 Nos ponemos en escucha...
 
-![[Pasted image 20231108123251.png]]
+![](/assets/images/htb-writeup-codify/Pasted image 20231108123251.png)
 
 
 Obtendríamos la Reverse Shell y estaríamos dentro de la máquina, tan sólo quedaría darle tratamiento a la TTY, sino sabes, te recomiendo ver este post.[((Click aquí))]()
@@ -58,7 +80,7 @@ Obtendríamos la Reverse Shell y estaríamos dentro de la máquina, tan sólo qu
 
 Sí vemos el **"/etc/passwd"** veríamos que hay un usuario con nombre "**joshua**", así que nos interesaría convertirnos en él, buscando recursos qué podamos leer y aprovecharnos, encontramos en la ruta "**/var/www/conctact**" que dentro contiene una .db.
 
-![[Pasted image 20231108123645.png]]
+![](/assets/images/htb-writeup-codify/Pasted image 20231108123645.png)
 
 
 Como vemos tenemos un hash con lo que parece ser la contraseña, así que usamos la herramienta "**John The Rippe**r" para tratar de hacerle un descrypt.
@@ -69,16 +91,16 @@ john --wordlist=/usr/share/wordlists/rockyou.txt hash.txt --format=bcrypt --show
 
 dentro del "hash.txt" pondríamos el hash qué vimos de la .db para brute forcearlo, dándonos al cabo de unos minutos la credencial correspondiente del usuario **Joshua**, por lo qué podríamos convertirnos en él.
 
-![[Pasted image 20231108123956.png]]
+![](/assets/images/htb-writeup-codify/Pasted image 20231108123956.png)
 
 # Escalada de Privilegios #2
 
 Sí buscamos por permisos SUDOERS.
 
-![[Pasted image 20231108124112.png]]
+![](/assets/images/htb-writeup-codify/Pasted image 20231108124112.png)
 
 Vemos que podemos ejecutar como **Root** el script en Bash "**mysql-backup.sh**", lo ejecutamos para ver como funciona.
-![[Pasted image 20231108124236.png]]
+![](/assets/images/htb-writeup-codify/Pasted image 20231108124236.png)
 
 Debemos proporcionar la contraseña de **Root**, cuyas credenciales no sabemos, pero como podemos ejecutar el script las veces qué queramos podemos hacer un ataque de fuerza bruta, para ello nos aprovechamos del siguiente script en Python.
 
@@ -104,4 +126,4 @@ found = True
 
 Que al ejecutarlo nos reportará la contraseña, y ya podemos convertirnos en ROOT.
 
-![[Pasted image 20231108124612.png]]
+![](/assets/images/htb-writeup-codify/Pasted image 20231108124612.png)
