@@ -22,7 +22,11 @@ tags:
 
 ![](/assets/images/htb-writeup-codify/codify_logo.png)
 
+Para vulnerar esta máquina ByPasseamos la medidad de seguridad de la biblioteca vim2 donde podemos ejecutar código malicioso NodeJS, pudiendo así llevar a cabo una ejecución Remota de Comandos, aprovechándonos de esto nos entablamos una Reverse Shell para posterior a ello escalar Privilegios con unas credenciales de una base de datos que estarían hasheadas, usamos una herramienta para ver en texto plano las credenciales, por último llevaríamos a cabo una Escalada de Privilegios para convertirnos en ROOT aprovechandonos de un .sh del cual tenemos SUDOERS
+
+
 # PortScan
+________
 
 ```
 nmap -p- --open -vvv --min-rate 5000 -Pn -n 10.10.11.239
@@ -51,6 +55,7 @@ Nmap done: 1 IP address (1 host up) scanned in 13.50 seconds
 
 
 # Sitio Web
+_________
 
 ![](/assets/images/htb-writeup-codify/Pasted image 20231108122352.png)
 
@@ -60,7 +65,7 @@ Sí leemos, vemos qué es un sitio web para probar código en Node.js, lo primer
 
 Como vemos nos dice qué está usando una librería **"vm2"**, para evitar el JavaScript & qué también tiene una capa de seguridad para evitar código malicioso, lo primero que se me ocurre es buscar en internet posibles **ByPass** para el vm2, así encontrando este recurso:
 
-https://security.snyk.io/vuln/SNYK-JS-VM2-5537100
+[Click aquí para ir al recurso](https://security.snyk.io/vuln/SNYK-JS-VM2-5537100)
 
 El recurso nos proporciona un **PoC** para llevar a cabo una **RCE**, lo probamos en el editor de texto del sitio web.
 
@@ -76,7 +81,8 @@ Nos ponemos en escucha...
 
 Obtendríamos la Reverse Shell y estaríamos dentro de la máquina, tan sólo quedaría darle tratamiento a la TTY, sino sabes, te recomiendo ver este post.[((Click aquí))]()
 
-# Escalada de Privilegios #1 
+# Escalada de Privilegios #1
+_______
 
 Sí vemos el **"/etc/passwd"** veríamos que hay un usuario con nombre "**joshua**", así que nos interesaría convertirnos en él, buscando recursos qué podamos leer y aprovecharnos, encontramos en la ruta "**/var/www/conctact**" que dentro contiene una .db.
 
@@ -94,6 +100,7 @@ dentro del "hash.txt" pondríamos el hash qué vimos de la .db para brute forcea
 ![](/assets/images/htb-writeup-codify/Pasted image 20231108123956.png)
 
 # Escalada de Privilegios #2
+_____
 
 Sí buscamos por permisos SUDOERS.
 
