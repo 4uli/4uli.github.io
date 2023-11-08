@@ -79,7 +79,7 @@ Nos ponemos en escucha...
 ![](/assets/images/htb-writeup-codify/Pasted image 20231108123251.png)
 
 
-Obtendríamos la Reverse Shell y estaríamos dentro de la máquina, tan sólo quedaría darle tratamiento a la TTY, sino sabes, te recomiendo ver este post.[((Click aquí))](https://4uli.github.io/tratamiento-tty/)
+Obtendríamos la Reverse Shell y estaríamos dentro de la máquina, tan sólo quedaría darle tratamiento a la TTY, sino sabes, te recomiendo ver este post.  [((Click aquí))](https://4uli.github.io/tratamiento-tty/)
 
 # Escalada de Privilegios #1
 _______
