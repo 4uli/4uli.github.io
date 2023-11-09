@@ -1,5 +1,5 @@
 ---
-layout: e
+layout: single
 title: Durian - Vulnhub
 date: 25/10/2023
 classes: wide
