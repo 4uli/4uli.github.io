@@ -1,24 +1,24 @@
 ---
-diseño : individual
-título : BlackMarket - Vulnhub
-fecha : 25/10/2023
-clases : amplia
-encabezado :
-  adelanto :
-  icono : /assets/images/vulnhub.webp
-etiquetas :
+design : individual
+title : BlackMarket - Vulnhub
+date : 10/25/2023
+type : wide
+header :
+  preview :
+  icon : /assets/images/vulnhub.webp
+tags :
   -sqli _
   - caparazón inverso
   - enumeración de nombre de usuario ssh
   - abuso de sudo
-  -linux _
-  -fácil _
+  -linux 
+  -fácil 
 ---
 
 Para vulnerar la máquina BlackMarket, debemos hacer un reconocimiento de puertos, enumeración de servicios & posibles usuarios con las flags que se nos van dejando avanzamos mediante avanzamos a la máquina, para luego con esas credenciales entrar en un panel el cual es vulnerable a SQLI, allí obtendremos las credenciales para loguearnos en el panel del mercado negro, y seguiremos obteniendo pistas hasta que finalmene ingresemos a la máquina & escalemos privilegios.
 
 
-# ** Escaneo de puertos **
+# ** PortScan **
 ______
 
 ```
