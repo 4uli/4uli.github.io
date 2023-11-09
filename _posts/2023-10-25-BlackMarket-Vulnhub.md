@@ -1,12 +1,12 @@
 ---
-design : individual
-title : BlackMarket - Vulnhub
-date : 10/25/2023
-type : wide
-header :
-  preview :
-  icon : /assets/images/vulnhub.webp
-tags :
+layout:  single
+title: BlackMarket - Vulnhub
+date: 10/25/2023
+classes: wide
+header:
+  teaser:
+  icon: /assets/images/vulnhub.webp
+tags:
   -sqli _
   - caparazón inverso
   - enumeración de nombre de usuario ssh
