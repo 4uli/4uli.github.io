@@ -7,12 +7,12 @@ header:
   teaser:
   icon: /assets/images/vulnhub.webp
 tags:
-  -sqli _
-  - caparazón inverso
+  - sqli
+  - reverse shell
   - enumeración de nombre de usuario ssh
   - abuso de sudo
-  -linux 
-  -fácil 
+  - linux 
+  - fácil 
 ---
 
 Para vulnerar la máquina BlackMarket, debemos hacer un reconocimiento de puertos, enumeración de servicios & posibles usuarios con las flags que se nos van dejando avanzamos mediante avanzamos a la máquina, para luego con esas credenciales entrar en un panel el cual es vulnerable a SQLI, allí obtendremos las credenciales para loguearnos en el panel del mercado negro, y seguiremos obteniendo pistas hasta que finalmene ingresemos a la máquina & escalemos privilegios.
