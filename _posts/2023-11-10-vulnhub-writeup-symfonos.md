@@ -1,6 +1,7 @@
 ---
 layout: single
 title: Symfonos 1 - Vulnhub
+excerpt: "Para vulnerar esta máquina nos aprovechamos de qué en el recurso SMB podemos leer un .txt con posibles credenciales para usuarios del sistema, vemos un usuario del sistema en un comentario de un directorio en el SMB, logrando entrando a éste usuario, dandonos una nueva ruta para el servicio http del :80, corriendo allí un CMS WordPress con una versión de Mail Masta vulnerable a LFI, posteriormente nos aprovechamos del recurso SMTP para enviar un correo con código malicioso PHP y convertir el LFI a RCE mediante un Log Poisoning."
 date: 10/11/2023
 classes: wide
 header:
@@ -17,6 +18,7 @@ tags:
   - Abusing SUID privilege
   - PATH Hijacking
 ---
+
 
 Para vulnerar esta máquina nos aprovechamos de qué en el recurso SMB podemos leer un .txt con posibles credenciales para usuarios del sistema, vemos un usuario del sistema en un comentario de un directorio en el SMB, logrando entrando a éste usuario, dandonos una nueva ruta para el servicio http del :80, corriendo allí un CMS WordPress con una versión de Mail Masta vulnerable a LFI, posteriormente nos aprovechamos del recurso SMTP para enviar un correo con código malicioso PHP y convertir el LFI a RCE mediante un Log Poisoning.
 
