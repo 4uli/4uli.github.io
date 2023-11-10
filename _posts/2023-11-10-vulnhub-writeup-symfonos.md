@@ -204,7 +204,7 @@ nano curl.c
 ```
 
 Código del script malicioso.
-```C
+```python
 #include <unistd.h>
 
 int main(void) {
