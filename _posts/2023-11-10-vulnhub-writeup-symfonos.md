@@ -211,7 +211,7 @@ int main(void) {
     setuid(0);
     setgid(0);
     char *binaryPath = "/bin/bash";
-    char *args[] = {binaryPath, "-", NULL};
+    char *args[] = {binaryPath, "-p", NULL};
     
     execv(binaryPath, args);
     return 0;
