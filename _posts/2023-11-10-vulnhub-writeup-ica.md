@@ -1,6 +1,6 @@
 ---
 layout: single
-title: Ica 1 - Vulnhub
+title: ICA 1 - Vulnhub
 excerpt: "Para vulnerar esta máquina a la hora de ver el sitio web del :80, vemos qué tiene un qdPM con una versión vulnerable qué suele exponer las credenciales de la base de datos en una ruta específica, obteniendo así las credenciales para la DB MySQL, pudiendo conectarnos a ésta de forma remota, para posterior ver el contenido de sus base de datos internas, logrando así ver usuarios & contraseñas válidas del sistema, una vez conetado a la máquina con SSH escalamos privilegios mediante un Path Hijacking a un ejecutable qué llama a cat con su ruta relativa."
 date: 10/11/2023
 classes: wide
