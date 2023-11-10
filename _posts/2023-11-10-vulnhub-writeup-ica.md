@@ -1,4 +1,22 @@
+---
+layout: single
+title: Ica 1 - Vulnhub
+excerpt: "Para vulnerar esta máquina a la hora de ver el sitio web del :80, vemos qué tiene un qdPM con una versión vulnerable qué suele exponer las credenciales de la base de datos en una ruta específica, obteniendo así las credenciales para la DB MySQL, pudiendo conectarnos a ésta de forma remota, para posterior ver el contenido de sus base de datos internas, logrando así ver usuarios & contraseñas válidas del sistema, una vez conetado a la máquina con SSH escalamos privilegios mediante un Path Hijacking a un ejecutable qué llama a cat con su ruta relativa."
+date: 10/11/2023
+classes: wide
+header:
+  teaser_home_page: true
+  icon: /assets/images/vulnhub.webp
 
+tags:
+  - Abusing qdPM 9.2 - Password Exposure (Unauthenticated)
+  - Remote connection to the MYSQL
+  - SSH brute force
+  - Abusing SUID privilege
+  - PATH Hijacking
+---
+
+Para vulnerar esta máquina a la hora de ver el sitio web del :80, vemos qué tiene un qdPM con una versión vulnerable qué suele exponer las credenciales de la base de datos en una ruta específica, obteniendo así las credenciales para la DB MySQL, pudiendo conectarnos a ésta de forma remota, para posterior ver el contenido de sus base de datos internas, logrando así ver usuarios & contraseñas válidas del sistema, una vez conetado a la máquina con SSH escalamos privilegios mediante un Path Hijacking a un ejecutable qué llama a cat con su ruta relativa.
 
 
 # PortScan
@@ -50,18 +68,18 @@ AllowDatabaseTableColumn, SupportsMultipleResults, SupportsMultipleStatments, Su
 
 # Web Site
 ___
-![[Pasted image 20231110174213.png]]
+![](/assets/images/vulnhub-writeup-ica/Pasted image 20231110174213.png)
 
 Tendríamos un **qdPM** con versión **9.2**, sí buscamos en **exploit-db,** encontraríamos este ["exploit"](https://www.exploit-db.com/exploits/50176) que nos indica qué en esta versión sé suele exponer la contraseña de la **DB** en esta dirección:
 ```
 http://<website>/core/config/databases.yml
 ```
 
-![[Pasted image 20231110174747.png]]
+![](/assets/images/vulnhub-writeup-ica/Pasted image 20231110174747.png)
 
 Definitivamente, el recurso existe, nos lo descargamos en local para posterior ver el contenido qué está dentro.
 
-![[Pasted image 20231110174853.png]]
+![](/assets/images/vulnhub-writeup-ica/Pasted image 20231110174853.png)
 
 # Conexión a la DB MySQL
 
@@ -74,13 +92,13 @@ Una vez pongamos la contraseña, veremos qué definitivamente hemos logrado entr
 
 Ahora nos interesaría ver las bases de datos existentes, las tablas & el contenido dentro de las columnas qué nos interesa, llegando así a encontrar posibles credenciales del sistema.
 
-![[Pasted image 20231110180000.png]]
+![](/assets/images/vulnhub-writeup-ica/Pasted image 20231110180000.png)
 
 Encontramos lo qué parecen ser claves en **base64** de los mismos usuarios que logramos ver en la DB.
 
 Por lo qué se me ocurre desconvertir las claves en **base64** & intentar conectarme a todos los usuarios con esas claves, pero podríamos automatizarlo mediante un ataque de fuerza bruta con Hydra, metiendo las credenciales en archivos de texto, es decir, meter los usuarios en un archivo y las contraseñas desconvertidas en otras, tal que así:
 
-![[Pasted image 20231110180302.png]]
+![](/assets/images/vulnhub-writeup-ica/Pasted image 20231110180302.png)
 
 Para ahora con **hydra** usando estos dos diccionario intentar conectarnos mediante fuerza bruta.
 
@@ -90,14 +108,16 @@ hydra -L users.txt -P passwords.txt ssh://192.168.204.159
 
 Reportándonos así la clave válida para uno de los usuarios.
 
-![[Pasted image 20231110180404.png]]
+![](/assets/images/vulnhub-writeup-ica/Pasted image 20231110180404.png)
 
 Así qué ahora podríamos conectarnos a través de **SSH** a éste usuario.
 
-![[Pasted image 20231110180443.png]]
+![](/assets/images/vulnhub-writeup-ica/Pasted image 20231110180443.png)
 
 
 # Escalada de Privilegios
+_____
+
 
 Buscando en la máquina archivos con permisos **SUID**.
 ```bash
@@ -106,14 +126,14 @@ find / -perm -4000 2>/dev/null
 
 Encontraríamos un ejecutable con permisos **SUID** Root.
 
-![[Pasted image 20231110180654.png]]
+![](/assets/images/vulnhub-writeup-ica/Pasted image 20231110180654.png)
 
 qué indagando sobre este ejecutable con strings.
 ```bash
 strings /opt/get_access
 ```
 
-![[Pasted image 20231110180921.png]]
+![](/assets/images/vulnhub-writeup-ica/Pasted image 20231110180921.png)
 
 Vemos qué hace un **cat** a la ruta "**/root/system.info**", el problema es qué está usando la ruta relativa del **cat** y no la absoluta, por lo qué podríamos llevar a cabo un **Path Hijacking**.
 
@@ -151,4 +171,4 @@ export PATH=/tmp/:$PATH
 
 De forma que cuando volvamos a ejecutar el "**get_access**" leerá nuestro **cat**, otorgándonos así una bash con privilegios como **Root**.
 
-![[Pasted image 20231110182015.png]]
+![](/assets/images/vulnhub-writeup-ica/Pasted image 20231110182015.png)
