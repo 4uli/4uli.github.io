@@ -18,6 +18,9 @@ tags:
   - abusing sudoers
 ---
 
+Para resolver esta máquina nos dimos cuenta qué a la hora del escaneo con Nmap nos reportó que el repositorio .Git estaba expuesto, nos aprovechamos de esto para ver los commit's, en unos de los commits obtendríamos credenciales en texto claro para acceder en la página Web como el desarrollador Web, posterior a ello llevamos a cabo un SQLI basada en UNION para obtener credenciales SSH, una vez dentro podíamos ver el historial descubriendo así servicio web internos de los cuales abusamos para convertinos en usuario privilegiado.
+
+
 # PortScan
 ____
 
