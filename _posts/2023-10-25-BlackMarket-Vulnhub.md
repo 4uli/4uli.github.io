@@ -7,7 +7,7 @@ header:
   teaser:
   icon: /assets/images/vulnhub.webp
 tags:
-  - sqli
+  - SQLI
   - reverse shell
   - ssh username enumeration
   - sudo abuse
