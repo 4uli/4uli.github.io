@@ -234,4 +234,4 @@ export PATH=/tmp/:$PATH
 
 Ahora al ejecutar el "**statuscheck**" obtendríamos una bash como **ROOT**.
 
-![[Pasted image 20231110125217.png]]
+![](/assets/images/vulnhub-writeup-symfonos/Pasted image 20231110125217.png)
