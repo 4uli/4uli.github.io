@@ -2,7 +2,7 @@
 layout: single
 title: Corrosion 2 - Vulnhub
 excerpt: "Para resolver esta máquina, nos aprovechamos qué tenemos una copia de seguridad expuesta del código fuente con credenciales válidas para ingresar al panel Tomcat como admin, una vez dentro del panel podemos subir .WAR, así subiendo un .WAR malicioso, del cual nos aprovechamos para hacer un RCE, entablandonos una Reverse Shell, una vez dentro de la máquina nos aprovechamos de de un ejecutable para leer cualquier archivo como Root, leyendo el shadow & viendo las contraseñas para usuarios hasheadas, usamos hashcat para desencriptarla y verla, por último explotamos un permiso SUDOERS para un .py qué ejecutaba una librería con permisos mal incorporados."
-date: 11/14/2023
+date: 2023-12-15
 classes: wide
 header:
   teaser_home_page: true
