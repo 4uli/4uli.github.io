@@ -1,4 +1,23 @@
+---
+layout: single
+title: Corrosion 2 - Vulnhub
+excerpt: ""
+date: 11/14/2023
+classes: wide
+header:
+  teaser_home_page: true
+  icon: /assets/images/vulnhub.webp
 
+tags:
+  - Web enumeration
+  - Information Leakage
+  - Cracking ZIP file
+  - Abusing Tomcat - Creating a malicious WAR file > RCE
+  - Cracking Hash md5sum
+  - manipulación de librería Python con permisos incorrectos [Privilege Escalation]
+  - bash History - Information Leakage
+  - abusing sudoers
+---
 
 # PortScan
 
@@ -51,10 +70,10 @@ MAC Address: 00:0C:29:52:93:A1 (VMware)
 ```
 
 Vemos qué nos reporta un recurso "**backup.zip**" en el servicio web **http** del puerto **:8080**, procedemos a descargárnoslo en local para descomprimirlo.
-![[Pasted image 20231114120913.png]]
+![](/assets/images/vulnhub-writeup-corrosion2/Pasted image 20231114120913.png)
 Al intentar descomprimirlo descubrimos qué está encriptado con contraseñas, pero con la herramienta "**fcrackzip**" podríamos intentar crackear el .**ZIP**
 
-![[Pasted image 20231114121332.png]]
+![](/assets/images/vulnhub-writeup-corrosion2/Pasted image 20231114121332.png)
 
 1. **"-u":** usamos este parámetro para eliminar contraseñas qué no coincidan.
 2. **"-b"**: usamos este parámetro para indicar qué queremos aplicar fuerza bruta.
@@ -63,16 +82,16 @@ y al final indicamos el **.ZIP** al que queremos hacerle el ataque.
 
 Una vez descomprimamos tendríamos varios archivos, uno de ellos se llama "**tomcat-users.xml**" por lo qué sospechoso qué probablemente aquí encontremos credenciales en formato XML.
 
-![[Pasted image 20231114121824.png]]
+![](/assets/images/vulnhub-writeup-corrosion2/Pasted image 20231114121824.png)
 
 Obteniendo así las credenciales de **Admin**, para el servicio web del **:8080**, así que entro a ver este servicio.
 
-![[Pasted image 20231114122049.png]]
+![](/assets/images/vulnhub-writeup-corrosion2/Pasted image 20231114122049.png)
 
 Encontrándome con un servicio apache **Tomcat**, como nos lo suponíamos al descomprimir el backup, le damos a **"Manager App**", nos pedirá credenciales, qué ya conocemos la admin, así que la ponemos para encontrarnos con el panel.
 
 Descubriendo así, que podemos subir archivos .WAR.
-![[Pasted image 20231114122240.png]]
+![](/assets/images/vulnhub-writeup-corrosion2/Pasted image 20231114122240.png)
 
 Por lo que se me ocurre buscar posibles vulnerabilidades para conectarnos a la máquina qué está corriendo el servicio, encontrándome en [HackTricks](https://book.hacktricks.xyz/network-services-pentesting/pentesting-web/tomcat) qué podemos mediante "**MSFVenom**" crearnos un payload para entablarnos una Reverse Shell con éste one liner:
 ```bash
@@ -88,11 +107,11 @@ nc -nlvp 443
 
 Procedemos a subir el "**revshell.war**", una vez subido nos aparecerá en el panel.
 
-![[Pasted image 20231114122915.png]]
+![](/assets/images/vulnhub-writeup-corrosion2/Pasted image 20231114122915.png)
 
 Le damos click encima de lo que está marcado en rojo, y ya debería entablarnos conexión con nuestro puerto en escucha.
 
-![[Pasted image 20231114123128.png]]
+![](/assets/images/vulnhub-writeup-corrosion2/Pasted image 20231114123128.png)
 
 Ahora sólo quedaría darle **tratamiento a la TTY**, que si no sabemos cómo te recomiendo [((CLICKEAR AQUÍ))](https://4uli.github.io/tratamiento-tty/)
 
@@ -100,11 +119,11 @@ Ahora sólo quedaría darle **tratamiento a la TTY**, que si no sabemos cómo te
 
 Estamos como el usuario "**tomcat**" que es el servicio web, por lo qué nos interesa escalar nuestro privilegio.
 
-![[Pasted image 20231114123841.png]]
+![](/assets/images/vulnhub-writeup-corrosion2/Pasted image 20231114123841.png)
 
 Vemos qué tienen directorios "**jaye**" y "**randy**", por lo qué intento acceder a estos usuarios usando las credenciales qué usamos para acceder como admin a Tomcat.
 
-![[Pasted image 20231114123946.png]]
+![](/assets/images/vulnhub-writeup-corrosion2/Pasted image 20231114123946.png)
 
 Logrando así entrar como "**jaye**"
 
@@ -115,14 +134,14 @@ Y sí como "**jaye**" buscamos ejecutables o binarios con permisos SUID.
 find / -perm -4000 2>/dev/null
 ```
 
-![[Pasted image 20231114124148.png]]
+![](/assets/images/vulnhub-writeup-corrosion2/Pasted image 20231114124148.png)
 
 Encontraríamos este ejecutable que podemos usar como como Root gracias a su SUID, así qué intento ver como funciona este programa.
-![[Pasted image 20231114124257.png]]
+![](/assets/images/vulnhub-writeup-corrosion2/Pasted image 20231114124257.png)
 
 Me fijo más en la parte que podemos usar un **strings** & luego una ruta, pruebo para ver de que se trata...
 
-![[Pasted image 20231114124352.png]]
+![](/assets/images/vulnhub-writeup-corrosion2/Pasted image 20231114124352.png)
 
 Viendo qué aparentemente busca únicamente por el string qué le pongamos en una ruta de un archivo dado, por lo que se me ocurre listar el "**/etc/shadow**" tal que así:
 ```bash
@@ -130,7 +149,7 @@ Viendo qué aparentemente busca únicamente por el string qué le pongamos en un
 ```
 
 para qué nos liste por todo el contenido de  "**/etc/shadow**" viendo así las contraseñas hasheadas de los usuarios a nivel de sistema.
-![[Pasted image 20231114124719.png]]
+![](/assets/images/vulnhub-writeup-corrosion2/Pasted image 20231114124719.png)
 
 Tenemos el hash del usuario "**randy**", por lo qué podríamos mediante un ataque de fuerza bruta con "**hashcat**" tratar de crackear la contraseña con un diccionario dado.
 
@@ -142,7 +161,7 @@ Ya con **hashcat** instalado en nuestra máquina local windows, en el mismo dire
 ```
 
 Esto demorará bastante, pero una vez finalicé debería reportarnos la credencial válida para el usuario "**randy**"
-![[password.png]]
+![](/assets/images/vulnhub-writeup-corrosion2/password.png)
 
 # Escalada de Privilegios #3 
 
@@ -152,11 +171,11 @@ Una vez como "**randy**" si vemos los permisos SUDOERS.
 sudo -l
 ```
 
-![[Pasted image 20231114125343.png]]
+![](/assets/images/vulnhub-writeup-corrosion2/Pasted image 20231114125343.png)
 
 Vemos qué podemos ejecutar el "**randombase64.py**" como el usuario Root, pero el script de primera no hace nada malicioso o qué comprometa a Root, sin embargo, si analizamos el script.
 
-![[Pasted image 20231114125435.png]]
+![](/assets/images/vulnhub-writeup-corrosion2/Pasted image 20231114125435.png)
 
 Importa la librería **base64**, por lo qué podríamos ver sí tenemos permisos para modificar esta librería & volverla maliciosa.
 
@@ -165,13 +184,13 @@ Hacemos una búsqueda de la librería descubriendo su ruta absoluta:
 find / -name base64.py 2>/dev/null
 ```
 
-![[Pasted image 20231114125550.png]]
+![](/assets/images/vulnhub-writeup-corrosion2/Pasted image 20231114125550.png)
 
-![[Pasted image 20231114125658.png]]
+![[/assets/images/vulnhub-writeup-corrosion2/Pasted image 20231114125658.png]]
 
 Tenemos permisos para escribir, así qué podemos aprovecharnos de modificar la librería para que sea maliciosa.
 
-![[Pasted image 20231114130230.png]]
+![](/assets/images/vulnhub-writeup-corrosion2/Pasted image 20231114130230.png)
 
 Importamos la librería **OS** para qué la bash tenga permisos **SUID** y como es **Root** qué ejecuta el script "**randombase64.py**" tendrá permisos para hacerlo.
 
@@ -181,6 +200,6 @@ sudo /usr/bin/python3.8 /home/randy/randombase64.py
 ```
 
 
-![[Pasted image 20231114130328.png]]
+![](/assets/images/vulnhub-writeup-corrosion2/Pasted image 20231114130328.png)
 
 Y nos convertiriamos en Root.
