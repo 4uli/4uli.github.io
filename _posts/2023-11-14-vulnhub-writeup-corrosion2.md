@@ -14,7 +14,7 @@ tags:
   - Cracking ZIP file
   - Abusing Tomcat - Creating a malicious WAR file > RCE
   - Cracking Hash md5sum
-  - manipulación de librería Python con permisos incorrectos [Privilege Escalation]
+  - manipulación de librería Python con permisos incorrectos > Privilege Escalation
 ---
 
 # PortScan
