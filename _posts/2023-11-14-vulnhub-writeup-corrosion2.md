@@ -15,8 +15,6 @@ tags:
   - Abusing Tomcat - Creating a malicious WAR file > RCE
   - Cracking Hash md5sum
   - manipulación de librería Python con permisos incorrectos [Privilege Escalation]
-  - bash History - Information Leakage
-  - abusing sudoers
 ---
 
 # PortScan
