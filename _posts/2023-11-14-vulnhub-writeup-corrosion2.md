@@ -166,7 +166,8 @@ Ya con **hashcat** instalado en nuestra máquina local windows, en el mismo dire
 ```
 
 Esto demorará bastante, pero una vez finalicé debería reportarnos la credencial válida para el usuario "**randy**"
-```![] (/assets/images/vulnhub-writeup-corrosion2/password.png)```
+![](/assets/images/vulnhub-writeup-corrosion2/password.png)
+
 
 # Escalada de Privilegios #3 
 ___
