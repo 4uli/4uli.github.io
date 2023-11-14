@@ -1,7 +1,7 @@
 ---
 layout: single
 title: Corrosion 2 - Vulnhub
-excerpt: ""
+excerpt: "Para resolver esta máquina, nos aprovechamos qué tenemos una copia de seguridad expuesta del código fuente con credenciales válidas para ingresar al panel Tomcat como admin, una vez dentro del panel podemos subir .WAR, así subiendo un .WAR malicioso, del cual nos aprovechamos para hacer un RCE, entablandonos una Reverse Shell, una vez dentro de la máquina nos aprovechamos de de un ejecutable para leer cualquier archivo como Root, leyendo el shadow & viendo las contraseñas para usuarios hasheadas, usamos hashcat para desencriptarla y verla, por último explotamos un permiso SUDOERS para un .py qué ejecutaba una librería con permisos mal incorporados."
 date: 11/14/2023
 classes: wide
 header:
@@ -17,7 +17,11 @@ tags:
   - manipulación de librería Python con permisos incorrectos > Privilege Escalation
 ---
 
+Para resolver esta máquina, nos aprovechamos qué tenemos una copia de seguridad expuesta del código fuente con credenciales válidas para ingresar al panel Tomcat como admin, una vez dentro del panel podemos subir .WAR, así subiendo un .WAR malicioso, del cual nos aprovechamos para hacer un RCE, entablandonos una Reverse Shell, una vez dentro de la máquina nos aprovechamos de de un ejecutable para leer cualquier archivo como Root, leyendo el shadow & viendo las contraseñas para usuarios hasheadas, usamos hashcat para desencriptarla y verla, por último explotamos un permiso SUDOERS para un .py qué ejecutaba una librería con permisos mal incorporados.
+
 # PortScan
+____
+
 
 ```
 # Nmap 7.93 scan initiated Tue Nov 14 10:11:41 2023 as: nmap -sCV -p22,80,8080 192.168.204.161 
@@ -47,6 +51,7 @@ Service detection performed. Please report any incorrect results at https://nmap
 ```
 
 # WebScan
+____
 
 ```
 # Nmap 7.93 scan initiated Tue Nov 14 10:17:04 2023 as: nmap --script http-enum -p8080,80 -oN webS
@@ -114,6 +119,7 @@ Le damos click encima de lo que está marcado en rojo, y ya debería entablarnos
 Ahora sólo quedaría darle **tratamiento a la TTY**, que si no sabemos cómo te recomiendo [((CLICKEAR AQUÍ))](https://4uli.github.io/tratamiento-tty/)
 
 # Escala de Privilegios #1 
+___
 
 Estamos como el usuario "**tomcat**" que es el servicio web, por lo qué nos interesa escalar nuestro privilegio.
 
@@ -126,6 +132,7 @@ Vemos qué tienen directorios "**jaye**" y "**randy**", por lo qué intento acce
 Logrando así entrar como "**jaye**"
 
 # Escalada de Privilegios #2
+____
 
 Y sí como "**jaye**" buscamos ejecutables o binarios con permisos SUID.
 ```bash
@@ -162,6 +169,7 @@ Esto demorará bastante, pero una vez finalicé debería reportarnos la credenci
 ![](/assets/images/vulnhub-writeup-corrosion2/password.png)
 
 # Escalada de Privilegios #3 
+___
 
 Una vez como "**randy**" si vemos los permisos SUDOERS.
 
