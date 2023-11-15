@@ -1,4 +1,21 @@
+---
+layout: single
+title: BuffEMR - Vulnhub
+excerpt: ""
+date: 15/11/2023
+classes: wide
+header:
+  teaser_home_page: true
+  icon: /assets/images/vulnhub.webp
 
+tags:
+  - Web enumeration
+  - Information Leakage
+  - Cracking ZIP file
+  - Abusing Tomcat - Creating a malicious WAR file > RCE
+  - Cracking Hash md5sum
+  - manipulación de librería Python con permisos incorrectos > Privilege Escalation
+---
 
 
 # PortScan
@@ -54,19 +71,19 @@ Nmap nos reporta qué es posible ingresar como el usuario **"anonymous"** al ser
 mirror [nombre a descargar]
 ```
 
-![[Pasted image 20231115105408.png]]
+![](/assets/images/vulnhub-writeup-buffemr/Pasted image 20231115105408.png)
 
 
 Qué al abrirlo, vemos qué aparentemente es un código fuente:
-![[Pasted image 20231115105501.png]]
+![](/assets/images/vulnhub-writeup-buffemr/Pasted image 20231115105501.png)
 Viendo que es un código fuente, indagando en internet descubrimos qué "**openEMR**" es un software de medicina, por ahora intento ver algún tipo de credenciales para intentar conectarme **SSH** o si me puede servir más adelante en el servicio web.
 
 Encontrando así estas credenciales:
-![[Pasted image 20231115105918.png]]
+![](/assets/images/vulnhub-writeup-buffemr/Pasted image 20231115105918.png)
 
 Intenté conectarme por SSH, por no logré nada, igual guardé las credenciales, seguí investigando.. descubriendo también las credenciales del admin de la **DB**.
 
-![[Pasted image 20231115111951.png]]
+![](/assets/images/vulnhub-writeup-buffemr/Pasted image 20231115111951.png)
 
 Así qué ahora me interesa ir por el servicio web del :80.
 
@@ -74,22 +91,22 @@ Así qué ahora me interesa ir por el servicio web del :80.
 # Enumeración Web
 ___
 
-![[Pasted image 20231115112048.png]]
+![](/assets/images/vulnhub-writeup-buffemr/Pasted image 20231115112048.png)
 
 Descubriendo así que está corriendo un **ubuntu** default, pero con la duda del código fuente que vimos del "**openEMR**"  indico esta ruta en la URL.
 
-![[Pasted image 20231115112152.png]]
+![](/assets/images/vulnhub-writeup-buffemr/Pasted image 20231115112152.png)
 
 Descubriendo un sitio web, pruebo a probar aquí las credenciales qué encontré en el código fuente, logrando entrar como el usuario "admin".
 
 Sé me ocurre buscar vulnerabilidades para este servicio, así que busco su versión, para posterior buscar posibles vulnerabilidades.
 
-![[Pasted image 20231115112351.png]]
+![](/assets/images/vulnhub-writeup-buffemr/Pasted image 20231115112351.png)
 
 
 Encontrando este **PoC** en [Exploit-DB](https://www.exploit-db.com/exploits/45161) desde consola con "**searchsploit**", qué podemos podemos llevar a cabo un RCE, entablándonos así una Reverse Shell.
 
-![[Pasted image 20231115115737.png]]
+![](/assets/images/vulnhub-writeup-buffemr/Pasted image 20231115115737.png)
 
 
 Y ya tan sólo quedaría darle tratamiento a la TTY, sino sabemos como [((Mira este tutorial))](https://4uli.github.io/tratamiento-tty/)
@@ -100,22 +117,23 @@ ____
 
 Indagando en la máquina, encontré el siguiente .ZIP.
 
-![[Pasted image 20231115120916.png]]
+![](/assets/images/vulnhub-writeup-buffemr/Pasted image 20231115120916.png)
 
 El cual me lo llevo a local para descomprimirlo.
 
-![[Pasted image 20231115121050.png]]
+![](Pasted image 20231115121050.png)
+
 Nos pide contraseña, intenté crackearla y no logré obtener nada, así que opté por buscar en el código fuente qué obtuvimos anteriormente del FTP, obteniendo esta credencial en **base64**.
 
-![[Pasted image 20231115121247.png]]
+![](/assets/images/vulnhub-writeup-buffemr/Pasted image 20231115121247.png)
 
 La desconvertí y intenté y tampoco pude, pero curiosamente al poner la misma cadena en base64 logré descomprimirlo.
 
-![[Pasted image 20231115121335.png]]
+![](/assets/images/vulnhub-writeup-buffemr/Pasted image 20231115121335.png)
 
 Viendo este contenido, que son las credenciales de un usuario válido del sistema.
 
-![[Pasted image 20231115121427.png]]
+![](/assets/images/vulnhub-writeup-buffemr/Pasted image 20231115121427.png)
 
 # Escalada de Privilegios #2
 
@@ -125,26 +143,26 @@ Sí buscamos como "**buffemr**" archivos con permisos **SUID**.
 find / -perm -4000 2>/dev/null
 ```
 
-![[Pasted image 20231115121714.png]]
+![](/assets/images/vulnhub-writeup-buffemr/Pasted image 20231115121714.png)
 
 Vemos que tenemos permisos SUID como root en el.
 
-![[Pasted image 20231115121926.png]]
+![](/assets/images/vulnhub-writeup-buffemr/Pasted image 20231115121926.png)
 
 Vemos que es un binario de 32bits, y nos pide qué lo ejecutemos con un argumento.
-![[Pasted image 20231115122113.png]]
+![](/assets/images/vulnhub-writeup-buffemr/Pasted image 20231115122113.png)
 
 así que pruebo a poner un argumento, pero no aparece nada.
-![[Pasted image 20231115122147.png]]
+![](/assets/images/vulnhub-writeup-buffemr/Pasted image 20231115122147.png)
 
 Por lo qué se me ocurre ver sí presenta algo a la hora de tratar de probar si es vulnerable a Buffer Overflow.
-![[Pasted image 20231115122302.png]]
+![](/assets/images/vulnhub-writeup-buffemr/Pasted image 20231115122302.png)
 
 Y vemos qué el ejecutable está programado de forma que el input es bien limitado, por ende podemos tratar de llevar a cabo un Buffer Overflow, para ello nos transferimos este binario a local.
 
 Para en local ejecutarlo con "**gdb**" configurado previamente con "**gef**"
 
-![[Pasted image 20231115123154.png]]
+![](/assets/images/vulnhub-writeup-buffemr/Pasted image 20231115123154.png)
 
 1. Sobre pasamos el ESP.
 ```bash
@@ -152,7 +170,7 @@ r [Y MUCHAS A's]
 ```
 
 Hasta que salga esto:
-![[Pasted image 20231115123418.png]]
+![](/assets/images/vulnhub-writeup-buffemr/Pasted image 20231115123418.png)
 
 2. Averiguamos la longitud de A's que necesitamos ante de escribir el EIP.
 ```bash
@@ -161,14 +179,14 @@ pattern create
 
 obteniendo así el payload para identificar la cantidad, nos copiamos este payload, para ahora volver a correr el programa, pero en vez de las A's ponemos el payload.
 
-![[Pasted image 20231115123747.png]]
+![](/assets/images/vulnhub-writeup-buffemr/Pasted image 20231115123747.png)
 
 Y para obtener la cantidad exacta de forma automática usamos.
 ```python
 pattern offset $eip
 ```
 
-![[Pasted image 20231115123958.png]]
+![](/assets/images/vulnhub-writeup-buffemr/Pasted image 20231115123958.png)
 
 Es decir, que después de 512 sobre-escribiremos el EIP.
 
@@ -177,12 +195,12 @@ Es decir, que después de 512 sobre-escribiremos el EIP.
 r $(python3 -c 'print("A"*512 + "B"*4)')
 ```
 
-![[Pasted image 20231115124231.png]]
+![](/assets/images/vulnhub-writeup-buffemr/Pasted image 20231115124231.png)
 
 Como vemos el EIP vale lo qué indicamos nosotros, por ende ya tenemos el control en el EIP.
 
 Sí ahora vemos protecciones del ejecutable.
-![[Pasted image 20231115124417.png]]
+![](/assets/images/vulnhub-writeup-buffemr/Pasted image 20231115124417.png)
 
 Vemos qué el "**NX**" está desactivado, permitiéndonos así interpretar cualquier tipo de shellcode qué le metamos, en este caso usaremos un shellcode para que nos de una bash con privilegios
 
@@ -213,5 +231,5 @@ y ejecutamos el binario así:
 ```
 
 
-![[Pasted image 20231115131759.png]]
+![](/assets/images/vulnhub-writeup-buffemr/Pasted image 20231115131759.png)
 Y estaríamos como Root.
