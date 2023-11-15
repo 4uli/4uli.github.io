@@ -1,7 +1,7 @@
 ---
 layout: single
 title: BuffEMR - Vulnhub
-excerpt: ""
+excerpt: "Para resolver esta máquina nos aprovechamos de que tenemos acceso a un código fuente qué está expuesto en el servicio FTP, obteniendo así credenciales como admin para el OpenEMR v5.0.1.3, cuya versión es vulnerable a RCE, obteniendo así una Reverse Shell, para posterior a ello escalar privilegios aprovechandonos de credenciales expuestas en el código fuente para usuarios válidos del sistema, y por último explotamos un ejecutable x32 con SUID Root por medio de un Buffer Overflow."
 date: 15/11/2023
 classes: wide
 header:
@@ -9,13 +9,13 @@ header:
   icon: /assets/images/vulnhub.webp
 
 tags:
-  - Web enumeration
+  - FTP enumeration
   - Information Leakage
-  - Cracking ZIP file
-  - Abusing Tomcat - Creating a malicious WAR file > RCE
-  - Cracking Hash md5sum
-  - manipulación de librería Python con permisos incorrectos > Privilege Escalation
+  - OpenEMR 5.0.1.3 (Authenticated) > RCE
+  - Buffer Overflow x32 > Privilege Escalation
 ---
+
+Para resolver esta máquina nos aprovechamos de que tenemos acceso a un código fuente qué está expuesto en el servicio FTP, obteniendo así credenciales como admin para el OpenEMR v5.0.1.3, cuya versión es vulnerable a RCE, obteniendo así una Reverse Shell, para posterior a ello escalar privilegios aprovechandonos de credenciales expuestas en el código fuente para usuarios válidos del sistema, y por último explotamos un ejecutable x32 con SUID Root por medio de un Buffer Overflow.
 
 
 # PortScan
@@ -234,4 +234,5 @@ y ejecutamos el binario así:
 
 
 ![](/assets/images/vulnhub-writeup-buffemr/Pasted image 20231115131759.png)
+
 Y estaríamos como Root.
