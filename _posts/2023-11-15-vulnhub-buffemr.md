@@ -79,6 +79,7 @@ Qué al abrirlo, vemos qué aparentemente es un código fuente:
 Viendo que es un código fuente, indagando en internet descubrimos qué "**openEMR**" es un software de medicina, por ahora intento ver algún tipo de credenciales para intentar conectarme **SSH** o si me puede servir más adelante en el servicio web.
 
 Encontrando así estas credenciales:
+
 ![](/assets/images/vulnhub-writeup-buffemr/Pasted image 20231115105918.png)
 
 Intenté conectarme por SSH, por no logré nada, igual guardé las credenciales, seguí investigando.. descubriendo también las credenciales del admin de la **DB**.
@@ -200,6 +201,7 @@ r $(python3 -c 'print("A"*512 + "B"*4)')
 Como vemos el EIP vale lo qué indicamos nosotros, por ende ya tenemos el control en el EIP.
 
 Sí ahora vemos protecciones del ejecutable.
+
 ![](/assets/images/vulnhub-writeup-buffemr/Pasted image 20231115124417.png)
 
 Vemos qué el "**NX**" está desactivado, permitiéndonos así interpretar cualquier tipo de shellcode qué le metamos, en este caso usaremos un shellcode para que nos de una bash con privilegios
