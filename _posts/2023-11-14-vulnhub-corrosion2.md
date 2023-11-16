@@ -9,7 +9,7 @@ header:
   icon: /assets/images/vulnhub.webp
 
 tags:
-  - Web enumeration
+  - Web Enumeration
   - Information Leakage
   - Cracking ZIP file
   - Abusing Tomcat - Creating a malicious WAR file > RCE
