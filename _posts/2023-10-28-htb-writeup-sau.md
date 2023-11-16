@@ -13,7 +13,7 @@ categories:
 tags:  
   - RCE
   - CSRF
-  - abuso sudoers
+  - abusing sudoers
   - CVE-2023–27163
 ---
 
