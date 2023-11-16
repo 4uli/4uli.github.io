@@ -133,4 +133,4 @@ Podemos ejecutar cualquier comando como quién sea, es decir, podemos convertirn
 sudo su
 ```
 
-![](/assets/images/htb-writeup-wpwn/Pasted image 20231116135828.png)
+![](/assets/images/vulnhub-writeup-wpwn/Pasted image 20231116135828.png)
