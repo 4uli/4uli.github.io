@@ -60,6 +60,7 @@ Como conocemos un usuario **válido**, usamos la operativa "**not equal**" para 
 En resumen,  al usuario "**admin**" ser válido, y la contraseña no ser igual a "**test**" **ByPassareamos** ésto porque verdaderamente la contraseña **NO ES IGUAL** a "test." logrando así iniciar sesión y seteandonos una cookie.
 
 ![](/assets/images/htb-writeup-nodeblog/Pasted image 20231120115202.png)
+
 Qué por lo que parece es una cookie de sesión URL **encodeada**, y sí vamos a la web nos veríamos logueados.
 
 ![](Pasted image 20231120115651.png)
