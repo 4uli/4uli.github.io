@@ -152,4 +152,4 @@ Viendo que podemos ejecutar lo que sea, es decir podemos convertirnos en Root co
 sudo su
 ```
 
-![[/assets/images/htb-writeup-nodeblog/Pasted image 20231120125651.png]]
+![](/assets/images/htb-writeup-nodeblog/Pasted image 20231120125651.png)
