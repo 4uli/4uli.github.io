@@ -11,8 +11,10 @@ header:
 categories:
   - hackthebox
 tags:
-  - NoSQL Injection (Authentication Bypass)
-
+  - Bypassing URL Blacklist
+  - SSRF 
+  - SSRF > LFI
+  - abusing sudoers (python script)
 ---
 
 # PortScan
