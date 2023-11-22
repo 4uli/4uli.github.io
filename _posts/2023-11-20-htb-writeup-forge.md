@@ -1,7 +1,7 @@
 ---
 layout: single
 title: Forge - Hack The Box
-excerpt: "
+excerpt: ""
 date: 2023-11-22
 classes: wide
 header:
