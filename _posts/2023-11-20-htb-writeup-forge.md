@@ -1,7 +1,7 @@
 ---
 layout: single
 title: Forge - Hack The Box
-excerpt: ""
+excerpt: "Para resolver ésta máquina, nos aprovechamos de qué no está sanitizada correctamente el servicio web, logrando en la sección de subir imagenes mediante URL bypassear la lista negra para apuntar al localhost de la misma máquina víctima, logrando así descubrir recursos qué externamente no están expuestos, obteniendo así un LFI del FTP para ver la clave privada SSH y ganar acceso a la máquina, posterior a ello nos convertimos en usuarios privilegiados abusando de los SUDOERS en un script de python3 del cual nos aprovechamos de la librería pdb. "
 date: 2023-11-22
 classes: wide
 header:
@@ -16,6 +16,9 @@ tags:
   - SSRF > LFI
   - abusing sudoers (python script)
 ---
+
+Para resolver ésta máquina, nos aprovechamos de qué no está sanitizada correctamente el servicio web, logrando en la sección de subir imagenes mediante URL bypassear la lista negra para apuntar al localhost de la misma máquina víctima, logrando así descubrir recursos qué externamente no están expuestos, obteniendo así un LFI del FTP para ver la clave privada SSH y ganar acceso a la máquina, posterior a ello nos convertimos en usuarios privilegiados abusando de los SUDOERS en un script de python3 del cual nos aprovechamos de la librería pdb.
+
 
 # PortScan
 __________
@@ -125,6 +128,7 @@ http://ADMIN.FORGE.HTB/upload?u=ftp://user:heightofsecurity123!@0x7f000001
 
 Esto para conectarnos al **ftp** de la misma máquina local.
 ![](/assets/images/htb-writeup-forge/Pasted image 20231122182726.png)
+
 Logrando así ver el contenido, por lo qué se me ocurre qué podríamos tratar de ver sí está expuesta la clave privada.
 
 ```bash
