@@ -1,7 +1,7 @@
 ---
 layout: single
 title: Devvortex - Hack The Box
-excerpt: ""
+excerpt: "Para resolver ésta máquina, hacemos una enumeración de sub-dominios, descubriendo así un sub-dominio el cual cuando enumeramos en busca de directorios encontramos un directorio con un nombre administrativo, el cual al entrar descubrimos qué tiene un CMS Joomla, con su respectivo panel de autenticación, nos aprovechamos de que la versión del CMS es vulnerable a acceso de información sensible, obteniendo así las credenciales válidas para un usuario del CMS, logrando así un RCE y entablarnos una Reverse Shell, obtenemos las credenciales para ingresar a la DB MySQL, y crackear el hash para un usuaro válido del sistema, luego abusamos de que el binario apport-cli y sus permisos SUDOERS para ejecutarmo como Root."
 date: 2023-11-25
 classes: wide
 header:
@@ -14,6 +14,9 @@ tags:
   - NoSQL Injection (Authentication Bypass)
 
 ---
+
+
+Para resolver ésta máquina, hacemos una enumeración de sub-dominios, descubriendo así un sub-dominio el cual cuando enumeramos en busca de directorios encontramos un directorio con un nombre administrativo, el cual al entrar descubrimos qué tiene un CMS Joomla, con su respectivo panel de autenticación, nos aprovechamos de que la versión del CMS es vulnerable a acceso de información sensible, obteniendo así las credenciales válidas para un usuario del CMS, logrando así un RCE y entablarnos una Reverse Shell, obtenemos las credenciales para ingresar a la DB MySQL, y crackear el hash para un usuaro válido del sistema, luego abusamos de que el binario apport-cli y sus permisos SUDOERS para ejecutarmo como Root.
 
 # PortScan
 ___
@@ -65,9 +68,17 @@ Found: dev.devvortex.htb (Status: 200) [Size: 23221]
 
 Encontraríamos un sub-dominio "**dev.devvortex.htb**", lo añadimos al **"/etc/hosts"** para tener virtual hosting con ese sub-dominio y poder ver su contenido, tiene parentesco al dominio principal, y por su nombre pienso qué es una página para desarrollo y no de producción, así que procedo a enumerar directorios de éste sub-dominio con **GoBuster**.
 
+```bash
+❯ gobuster dir -u http://dev.devvortex.htb -w /usr/share/SecLists/Discovery/Web-Content/directory-list-2.3-medium.txt -t 20 --add-slash
+===============================================================
 
+===============================================================
+
+/administrator/       (Status: 200) [Size: 12211]
+```
 
 Encontraríamos el directorio "**/administrator**", así que ingreso a éste porque me interesa ver qué hay, encontrándonos con un panel de autenticación del **CMS** Joomla.
+
 ![](/assets/images/htb-writeup-devvortex/Pasted image 20231125202429.png)
 
 Se me ocurrió usar la herramienta "**joomscan**" para buscar posibles vulnerabilidades en la versión de éste Joomla, pero no encontré nada, pero al menos la herramienta me reportó la versión del **CMS**, qué es **4.2.6**, así qué indagué en internet sobre posibles vulnerabilidades para ésta versión de Joomla.
