@@ -11,8 +11,15 @@ header:
 categories:
   - hackthebox
 tags:
-  - NoSQL Injection (Authentication Bypass)
-
+  - subdomain enumeration
+  - Web Enumeration
+  - CVE-2023-23752 > exposed credentials
+  - CMS exploitation > RCE
+  - password reuse for mysql login
+  - hash cracking
+  - password cracking
+  - CVE-2023-1326
+  - exploiting sudoers in apport-cli (Privilege escalation)
 ---
 
 
