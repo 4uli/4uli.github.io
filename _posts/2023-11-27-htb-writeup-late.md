@@ -53,7 +53,6 @@ Enumerando posibles directorios & viendo el código fuente no encontré nada int
 ```bash
 gobuster vhost -u http://late.htb/ -w /usr/share/SecLists/Discovery/DNS/subdomains-top1million-5000.txt -t 200 -k
 ===============================================================
-de
 ===============================================================
 Found: images.late.htb (Status: 200) [Size: 2187]
 ```
