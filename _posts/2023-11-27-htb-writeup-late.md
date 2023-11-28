@@ -1,7 +1,7 @@
 ---
 layout: single
 title: Late - Hack The Box
-excerpt: ""
+excerpt: "Para resolver esta máquina, enumeramos sub-dominios encontrándonos con un sub-dominio que convierte en texto las imagenes a través del framework Flask, abusamos la subida de estás imagenes, para que a la hora de subir una imagen inyectar código malicioso en ésta, es decir un SSTI, logrando así enumerar usuarios válidos del sistema, posteriormente la clave privada SSH de uno, por último abusamos de una tarea cron qué Root ejecuta cada cierto tiempo un script en Bash qué tenemos permisos de escritura, pero al tener el atributo append-only debemos modificar el código de una manera distinta, logrando así darle permisos SUID a la bash mediante ésta tarea CRON."
 date: 2023-11-27
 classes: wide
 header:
@@ -12,8 +12,14 @@ categories:
   - hackthebox
 tags:
   - subdomain enumeration
+  - abusing Upload File - Image to Text Flask Utility
+  - SSTI
+  - reading files through SSTI - SSH Private Key
+  - Abusing Cron Job (Privilege Escalation)
 
 ---
+
+Para resolver esta máquina, enumeramos sub-dominios encontrándonos con un sub-dominio que convierte en texto las imagenes a través del framework Flask, abusamos la subida de estás imagenes, para que a la hora de subir una imagen inyectar código malicioso en ésta, es decir un SSTI, logrando así enumerar usuarios válidos del sistema, posteriormente la clave privada SSH de uno, por último abusamos de una tarea cron qué Root ejecuta cada cierto tiempo un script en Bash qué tenemos permisos de escritura, pero al tener el atributo append-only debemos modificar el código de una manera distinta, logrando así darle permisos SUID a la bash mediante ésta tarea CRON.
 
 # PortScan
 ________
