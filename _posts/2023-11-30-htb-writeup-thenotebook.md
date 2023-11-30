@@ -1,7 +1,7 @@
 ---
 layout: single
 title: TheNoteBook - Hack The Box
-excerpt: ""
+excerpt: "Para resolver esta máquina nos aprovechamos que el Json Web Token en su cabecera está cargando un clave privada, para luego aplicar una comparativa con la signature, modificando la estructura en Json de los headers para qué cargue la clave privada desde nuestro lado, con una clave privada que hemos creado, obteniendo así una signature válida, y modificando la estructura de payload Json para tener permisos admin's, obteniendo así un nuevo panel para Admin, en el cual podemos subir archivos sin ninguna restricción, logrando subir un PHP malicioso para llevar a cabo un RCE, posterior a ello encontrarmos credenciales válidas para un usuario no privilegiado en los backups, por último nos convertimos en Root aprovechandonos de los Sudoers para ejecutar un contenedor Docker con versisón vulnerable a Docker Breakout."
 date: 2023-11-30
 classes: wide
 header:
@@ -11,13 +11,16 @@ header:
 categories:
   - hackthebox
 tags:
-  - subdomain enumeration
-  - abusing Upload File - Image to Text Flask Utility
-  - SSTI
-  - reading files through SSTI - SSH Private Key
-  - Abusing Cron Job (Privilege Escalation)
-
+  - Abusing JWT
+  - Abusing upload file
+  - Abusing upload file > RCE with php
+  - backup user directory
+  - Docker Breakout (CVE-2019-5736)
+  - (CVE-2019-5736)
 ---
+
+
+Para resolver esta máquina nos aprovechamos que el Json Web Token en su cabecera está cargando un clave privada, para luego aplicar una comparativa con la signature, modificando la estructura en Json de los headers para qué cargue la clave privada desde nuestro lado, con una clave privada que hemos creado, obteniendo así una signature válida, y modificando la estructura de payload Json para tener permisos admin's, obteniendo así un nuevo panel para Admin, en el cual podemos subir archivos sin ninguna restricción, logrando subir un PHP malicioso para llevar a cabo un RCE, posterior a ello encontrarmos credenciales válidas para un usuario no privilegiado en los backups, por último nos convertimos en Root aprovechandonos de los Sudoers para ejecutar un contenedor Docker con versisón vulnerable a Docker Breakout.
 
 # PortScan
 ____
@@ -50,6 +53,7 @@ ____
 Tendríamos una página web para registrarnos e iniciar sesión, así que creo una cuenta, para ver qué hay una vez logueados... tendríamos un apartado para crear notas, pruebo un **XSS** pero no logro resultados, sigo indagando, pero no encontré ninguna vulnerabilidades, así que opté por hacer una enumeración de posibles directorios con **GoBuster** y el diccionario "**SecLists**" pero tampoco encontré nada.
 
 Decidí fijarme en la **cookie de sesión**, viendo qué tenía la estructura de un **JWT**, fuí a la página [JWT.IO](https://jwt.io/) para ver su estructura.
+
 ![](/assets/images/htb-writeup-thenotebook/Pasted image 20231130170322.png)
 
 Vemos qué en los **Headers** contiene un campo curioso con nombre "**kid**" y posterior a ello está aparentemente está haciendo un request una **clave privada** desde su **localhost** al puerto **:7070**, por lo qué aparentemente éste campo se debe a qué en las cabeceras carga directamente la firma o **signature** para hacer una comparativa con la signature "real"...
@@ -182,6 +186,7 @@ sudo -l
 ![](/assets/images/htb-writeup-thenotebook/Pasted image 20231130181933.png)
 
 Vemos qué podemos ejecutar como quién sea la instrucción de ejecutar el contenedor "**webaap-dev01**", por lo que se me ocurre ejecutarlo con "**sudo**" de forma qué entre al contenedor como **Root** y luego tratar de hacer un "**docker breakout**".
+
 ![](/assets/images/htb-writeup-thenotebook/Pasted image 20231130182114.png)
 Pero sólo estamos en un contenedor, no estamos en la máquina real, así que intento hacer el **breakout**, o buscar posibles credenciales para root sin lograr encontrada nada...
 
