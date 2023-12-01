@@ -20,6 +20,7 @@ tags:
 
 Para resolver ésta máquina interceptamos la solicitud a la hora de iniciar sesión, logrando así manipular los campos & logrando consigo inyectar NoSQL malicioso para un usuario válido, logrando así burlar el sistema de inicio de sesión, para posterior a ello abusar de subidas de archivo en formato .xml convirtiéndolo en XXE, logrando ver el código fuente de la página web, para aprovecharnos de éste. Hacemos una cookie serialiada maliciosa para llevar a cabo un RCE y entablarnos una Reverse Shell, para posterior a ello enumerar credenciales en texto claro de la DB & aprovecharnos de los SUDOERS.
 
+![](/assets/images/htb-writeup-nodeblog/nodeblog_logo.png)
 
 # PortScan
 __________
