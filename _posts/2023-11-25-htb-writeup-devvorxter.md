@@ -22,6 +22,7 @@ tags:
   - exploiting sudoers in apport-cli (Privilege escalation)
 ---
 
+![](/assets/images/htb-writeup-devvortex/devvortex_logo.png)
 
 Para resolver ésta máquina, hacemos una enumeración de sub-dominios, descubriendo así un sub-dominio el cual cuando enumeramos en busca de directorios encontramos un directorio con un nombre administrativo, el cual al entrar descubrimos qué tiene un CMS Joomla, con su respectivo panel de autenticación, nos aprovechamos de que la versión del CMS es vulnerable a acceso de información sensible, obteniendo así las credenciales válidas para un usuario del CMS, logrando así un RCE y entablarnos una Reverse Shell, obtenemos las credenciales para ingresar a la DB MySQL, y crackear el hash para un usuaro válido del sistema, luego abusamos de que el binario apport-cli y sus permisos SUDOERS para ejecutarmo como Root.
 
