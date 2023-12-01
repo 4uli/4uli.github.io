@@ -19,6 +19,7 @@ tags:
 
 Para resolver ésta máquina, nos aprovechamos de qué no está sanitizada correctamente el servicio web, logrando en la sección de subir imagenes mediante URL bypassear la lista negra para apuntar al localhost de la misma máquina víctima, logrando así descubrir recursos qué externamente no están expuestos, obteniendo así un LFI del FTP para ver la clave privada SSH y ganar acceso a la máquina, posterior a ello nos convertimos en usuarios privilegiados abusando de los SUDOERS en un script de python3 del cual nos aprovechamos de la librería pdb.
 
+![](/assets/images/htb-writeup-forge/forge_logo.png)
 
 # PortScan
 __________
