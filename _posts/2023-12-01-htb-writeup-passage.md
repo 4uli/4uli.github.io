@@ -1,7 +1,7 @@
 ---
 layout: single
 title: Passage - Hack The Box
-excerpt: ""
+excerpt: "Para resolver ésta máquina nos aprovechamos qué la versión 2.1.2 del CuteNews es vulnerable a un RCE mediante una subida de archivo malicioso PHP, logrando así una Reverse Shell, para posterior a ello crackear un Hash encontrado en el código fuente, logrando así reusar la contraseña para un usuario válido del sistema, ya siendo éste usuario nos aprovechamos que tiene autorización SSH para conctarse como otro usuario del sistema, y ya como éste último usuario explotamos la vulnerabilidad del USB-Creator qué permite sobre-escribir cualquier archivo incluso sin tener permisos, para sobre-escribir la authorized_keys de Root, logrando acceso sin proporcionar credenciales."
 date: 2023-12-01
 classes: wide
 header:
@@ -11,9 +11,15 @@ header:
 categories:
   - hackthebox
 tags:
-  - Abusing JWT
-
+  - CuteNews Exploitation > RCE
+  - hash cracking
+  - password reuse
+  - USBCreator D-Bus Privilege Escalation
+  - abuse USBCreator to overwritten authorized_keys
 ---
+
+
+Para resolver ésta máquina nos aprovechamos qué la versión 2.1.2 del CuteNews es vulnerable a un RCE mediante una subida de archivo malicioso PHP, logrando así una Reverse Shell, para posterior a ello crackear un Hash encontrado en el código fuente, logrando así reusar la contraseña para un usuario válido del sistema, ya siendo éste usuario nos aprovechamos que tiene autorización SSH para conctarse como otro usuario del sistema, y ya como éste último usuario explotamos la vulnerabilidad del USB-Creator qué permite sobre-escribir cualquier archivo incluso sin tener permisos, para sobre-escribir la authorized_keys de Root, logrando acceso sin proporcionar credenciales.
 
 # PortScan
 ____
