@@ -13,7 +13,6 @@ categories:
 tags:
   - Injection LaTeX
   - Injection LaTeX > LFI
-  - pass the hash
   - abusing SUID
   - Linux
 ---
