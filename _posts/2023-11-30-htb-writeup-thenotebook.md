@@ -19,6 +19,7 @@ tags:
   - (CVE-2019-5736)
 ---
 
+![](/assets/images/htb-writeup-thenotebook/thenotebook_logo.png)
 
 Para resolver esta máquina nos aprovechamos que el Json Web Token en su cabecera está cargando un clave privada, para luego aplicar una comparativa con la signature, modificando la estructura en Json de los headers para qué cargue la clave privada desde nuestro lado, con una clave privada que hemos creado, obteniendo así una signature válida, y modificando la estructura de payload Json para tener permisos admin's, obteniendo así un nuevo panel para Admin, en el cual podemos subir archivos sin ninguna restricción, logrando subir un PHP malicioso para llevar a cabo un RCE, posterior a ello encontrarmos credenciales válidas para un usuario no privilegiado en los backups, por último nos convertimos en Root aprovechandonos de los Sudoers para ejecutar un contenedor Docker con versisón vulnerable a Docker Breakout.
 
