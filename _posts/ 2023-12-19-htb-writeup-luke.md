@@ -173,6 +173,7 @@ aquí encontré más credenciales, veía que decía algo de "**ajenti**" así qu
 ![](/assets/images/htb-writeup-luke/Pasted image 20231219103933.png)
 
 Acceder, directamente fuí a la terminal, y me cree una terminal para ingresar & ver como quien se estaba corriendo el servicio web... 
+
 ![](/assets/images/htb-writeup-luke/Pasted image 20231219104306.png)
 
 y para mi sorpresa el servicio lo corría **ROOT**, por ende no tendríamos que llevar a cabo una escalada de privilegios & **PWNED**!
