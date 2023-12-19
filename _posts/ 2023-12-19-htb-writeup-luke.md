@@ -1,4 +1,19 @@
+---
+layout: single
+title: Luke - Hack The Box
+excerpt: ""
+date: 2023-12-19
+classes: wide
+header:
+  teaser: /assets/images/htb-writeup-luke/luke_logo.png
+  teaser_home_page: true
+  icon: /assets/images/hackthebox.webp
+categories:
+  - hackthebox
+tags:
+  - CuteNews Exploitation > RCE
 
+---
 
 # PortScan
 ___
@@ -63,20 +78,20 @@ una vez leí éste mensaje, me dio sospecha de que **Derry** está exponiendo un
 
 # WebSite
 ___
-![[Pasted image 20231219095114.png]]
+![](/assets/images/htb-writeup-luke/Pasted image 20231219095114.png)
 
 Busqué en el código fuente, no encontré nada, la página principal no redirigiría a ningún lado así que opté por ver los otro puertos qué corrían en los protocolos **HTTP**.
 
 
 
 ## Port 3000:
-![[Pasted image 20231219100023.png]]
+![](/assets/images/htb-writeup-luke/Pasted image 20231219100023.png)
 
 Aquí tenía que tener un **token** para poder listar el contenido **Json** del framework que corría por detrás que era un **Node.js Express**
 
 
 ## Port 8000:
-![[Pasted image 20231219100318.png]]
+![](/assets/images/htb-writeup-luke/Pasted image 20231219100318.png)
 
 en éste panel debía loguearme para poder acceder al Panel del control del servicio **Ajenti**, y actualmente no conocía ninguna creenciales.
 
@@ -104,7 +119,7 @@ una vez probé el directorio "**management**" ví que había un panel de autenti
 
 uno que desde el principio me llamó la atención que esté expuesto fue el "**config.php**", ya que es un recurso que NO suele estar expuesto así que pensé que a éste recurso se refirió Derry cuando le mandó el mensaje a Chihiro.
 
-![[Pasted image 20231219101346.png]]
+![](/assets/images/htb-writeup-luke/Pasted image 20231219101346.png)
 
 ésto serían credenciales para la DB, igual pruebo con esa contraseña a ver sí se está reutilizando en algún sitio... probé, y probé en varios login's con varios nombre de usuarios sin lograr ningún acceso, sin embargo... un rato después envié una petición con CURL por **POST** al :**3000** con una DATA en **Json** que llevaba esta contraseña.
 ```bash
@@ -112,7 +127,7 @@ curl -s -X POST "http://luke.htb:3000/login" -H 'Content-Type: application/json'
 ```
 
 obteniendo la siguiente respuesta:
-![[Pasted image 20231219101909.png]]
+![](/assets/images/htb-writeup-luke/Pasted image 20231219101909.png)
 Vemos que nos da un **Token** ya que las credenciales eran correctas al loguearnos, sin embargo así de primera no podemos hacer nada con el token, así que procedo a hacer una enumeración de posibles directorios en el **:3000**.
 
 ```bash
@@ -130,7 +145,7 @@ veo qué hay un directorio **users** así que me interesa, procedo a enviar una 
 curl -s -X GET "http://luke.htb:3000/users/" -H "Authorization: Bearer JWT_HERE"
 ```
 
-![[Pasted image 20231219102639.png]]
+![](/assets/images/htb-writeup-luke/Pasted image 20231219102639.png)
 
 Viendo así contenido sensible en **JSON**, y por como se nombran sus directorios se me ocurre que podría ser una API, así que luego del directorio "**/users**" procedo a poner el nombre de éstos usuarios válidos a ver si logro ver más información.
 
@@ -138,7 +153,7 @@ Viendo así contenido sensible en **JSON**, y por como se nombran sus directorio
 curl -s -X GET "http://luke.htb:3000/users/Admin" -H "Authorization: JWT_HERE"
 ```
 
-![[Pasted image 20231219103022.png]]
+![](/assets/images/htb-writeup-luke/Pasted image 20231219103022.png)
 
 Viendo así las credenciales para **Admin**, así que procedo a ver las credenciales de todos los usuarios uno por uno, para tenerlas guardadas y ver sí podríamos reutilizarlas.
 
@@ -146,14 +161,14 @@ Fuí probando en todos los paneles con cada usuario & sus contraseñas, logrando
 
 Allí había un recurso con nombre "**config.json**" que me llamó la atención, entré para ver que contenía...
 
-![[Pasted image 20231219103649.png]]
+![](/assets/images/htb-writeup-luke/Pasted image 20231219103649.png)
 
 aquí encontré más credenciales, veía que decía algo de "**ajenti**" así que fuí directamente al servicio **Ajenti** del :8000 y probé estas credenciales, logrando así...
 
-![[Pasted image 20231219103933.png]]
+![](/assets/images/htb-writeup-luke/Pasted image 20231219103933.png)
 
 Acceder, directamente fuí a la terminal, y me cree una terminal para ingresar & ver como quien se estaba corriendo el servicio web... 
-![[Pasted image 20231219104306.png]]
+![](/assets/images/htb-writeup-luke/Pasted image 20231219104306.png)
 
 y para mi sorpresa el servicio lo corría **ROOT**, por ende no tendríamos que llevar a cabo una escalada de privilegios & **PWNED**!
 
