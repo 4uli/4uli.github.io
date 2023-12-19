@@ -1,7 +1,7 @@
 ---
 layout: single
 title: Luke - Hack The Box
-excerpt: ""
+excerpt: "Para resolver ésta máquina nos aprovechamos de que podemos acceder como anonymous al FTP, viendo allí un mensaje de un desarrollador qué nos da una pista de que hay un recurso expuesto quue no debería en algun lado, haciendo fuzzing descubrí el recurso con credenciales de una DB, pero cuya contraseña reutilizamos para la aplicacion con NodeJS, logrando posterior a ésto enumerar la API & viendo credenciales válidas, usando estas credenciales válidas para acceder a un directorio de gestión administrativa, y allí ver las credenciales válidas para el servicio Ajenti, logrando acceso al panel del control, así mismo a una terminal desde el panel como Root."
 date: 2023-12-19
 classes: wide
 header:
@@ -11,10 +11,15 @@ header:
 categories:
   - hackthebox
 tags:
-  - CuteNews Exploitation > RCE
-
+  - FTP enumeration
+  - Information Leakage
+  - abusing NodeJs application
+  - API enumeration
+  - abusing Ajenti
 ---
+![](/assets/images/htb-writeup-luke/luke_logo.png)
 
+Para resolver ésta máquina nos aprovechamos de que podemos acceder como anonymous al FTP, viendo allí un mensaje de un desarrollador qué nos da una pista de que hay un recurso expuesto quue no debería en algun lado, haciendo fuzzing descubrí el recurso con credenciales de una DB, pero cuya contraseña reutilizamos para la aplicacion con NodeJS, logrando posterior a ésto enumerar la API & viendo credenciales válidas, usando estas credenciales válidas para acceder a un directorio de gestión administrativa, y allí ver las credenciales válidas para el servicio Ajenti, logrando acceso al panel del control, así mismo a una terminal desde el panel como Root.
 # PortScan
 ___
 
