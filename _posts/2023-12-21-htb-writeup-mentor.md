@@ -1,3 +1,17 @@
+---
+layout: single
+title: Mentor - Hack The Box
+excerpt: ""
+date: 2023-12-21
+classes: wide
+header:
+  teaser: /assets/images/htb-writeup-mentor/mentor_logo.png
+  teaser_home_page: true
+  icon: /assets/images/hackthebox.webp
+categories:
+  - hackthebox
+tags:
+  - FTP enumeration
 
 # PortScan
 ___
