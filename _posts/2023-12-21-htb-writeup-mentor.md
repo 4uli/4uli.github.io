@@ -11,7 +11,19 @@ header:
 categories:
   - hackthebox
 tags:
-  - FTP enumeration
+  - subdomain enumeration
+  - Web enumeration
+  - API enumeration
+  - abusing API
+  - SNMP Enumeration (snmpwalk && snmpbulkwalk) + Community String Brute Force
+  - Information Leakage
+  - Abusing JWT
+  - API Exploitation (Command Injection)
+  - Chisel Tunnel
+  - Postgresql Service Enumeration
+  - Abusing sudoers
+
+
 ---
 # PortScan
 ___
@@ -60,6 +72,7 @@ ID           Response   Lines    Word       Chars       Payload
 ```
 
 añadimos éste sub-dominio al **"/etc/hosts"** para el virtual hosting, una vez añadido ingresamos al sub-dominio para ver qué contenía.
+
 ![](/assets/images/htb-writeup-mentor/Pasted image 20231220114234.png)
 
 No tenía nada en la raíz de la **api**, así que opté por buscar directorios de la api, en éste caso usé **GoBuster** para el descubrimiento.
@@ -87,17 +100,19 @@ hago **hovering** en donde se envía el correo a ver cómo se maneja la solicitu
 ![](/assets/images/htb-writeup-mentor/Pasted image 20231220114945.png)
 
 Viendo los métodos, de primera se me ocurre tratar de obtener los usuarios válidos, pero imaginé que sin arrastrar la cookie de sesión válida, no podré hacer ésto, igual lo intenté y no logré nada porque tenía que tener alguna cookie de sesión.
+
 ![](/assets/images/htb-writeup-mentor/Pasted image 20231220115104.png)
 y definitivamente, necesitaba la cookie en las cabeceras que aún desconocía el formato, así que opté por aprovecharme que conocía los **endpoint's** y crearme un usuario, usando como intermediario **BurpSuite**.
 
 ![](/assets/images/htb-writeup-mentor/Pasted image 20231220115307.png)
 
 Logro así crear un usuario con ID 5, así que ahora usaré el **endpoint** de autenticación con **BurpSuite** como intermediario para loguearme y ver la respuesta de la solicitud.
-![](Pasted image 20231220115606.png)
+![](/assets/images/htb-writeup-mentor/Pasted image 20231220115606.png)
 
 el servidor como respuesta nos devuelve un **JWT**, ahora sé que tipo de cookie de sesión se está utilizando, copio éste JWT para ver sí podemos ahora sí obtener los usuarios válidos del sistema que intentamos al principio.
 
 ![](/assets/images/htb-writeup-mentor/Pasted image 20231220115905.png)
+
 Al ver la solicitud en **BurpSuite**, veo qué no está arrastrando el **JWT**, ni está la cabecera para la autorización, así que las añado manualmente...
 ![](/assets/images/htb-writeup-mentor/Pasted image 20231220120747.png)
 
@@ -150,7 +165,7 @@ python snmpbrute.py -t 10.10.11.193 -f /usr/share/SecLists/Discovery/SNMP/common
 
 ![](/assets/images/htb-writeup-mentor/Pasted image 20231220123417.png)
 
-Obteniendo la credencial válida para la **v2**, así que intentamos conectarnos con **"snmwalk"**, pero en éste caso usaré una herramienta qué hace lo mismo pero es más rápida, que es "**snmpbulkwalk**".
+Obteniendo la credencial válida para la **v2**, así que intentamos conectarnos con **"snmpwalk"**, pero en éste caso usaré una herramienta qué hace lo mismo pero es más rápida, que es "**snmpbulkwalk**".
 ```bash
 snmpbulkwalk -c internal -v2c 10.10.11.193 > snmp_content.txt
 ```
@@ -172,7 +187,9 @@ Logrando así obtener el JWT válido para el usuario "**james**", así que ahora
 Viendo usuarios válidos del sistema, pero ciertamente no hay ninguna información comprometedora, así que voy al directorio "**admin**" que antes no tenía acceso...
 
 ![](/assets/images/htb-writeup-mentor/Pasted image 20231220124835.png)
+
 Descubriendo qué este point de la **API** nos da los **endpoints** de él mismo, así que intento ver el **"backup"**, me devuelve como respuesta qué no acepta el método **GET**, asi que cambio éste por **POST**.
+
 ![](/assets/images/htb-writeup-mentor/Pasted image 20231220125022.png)
 
 Una vez lo cambio, veo qué espera algo como cuerpo, así que viendo la estructura que usábamos al crear usuarios & autenticarnos, sé que debería ser una estructura **Json**, así que añado a la cabecera para que interpete el **Json** con el **Content-Type**.
@@ -187,6 +204,7 @@ Está esperando una estructura con "**path**", así que se me ocurre qué cuando
 ![](/assets/images/htb-writeup-mentor/Pasted image 20231220130319.png)
 
 Logrando que dure 5 segundos la respuesta del servidor, sé que estoy controlando el comando, entonces intento hacerme un **ping** a mí mismo para confirmarlo.
+
 ![](/assets/images/htb-writeup-mentor/Pasted image 20231220130503.png)
 ![](/assets/images/htb-writeup-mentor/Pasted image 20231220130531.png)
 
@@ -255,7 +273,9 @@ No encontré nada que podría llevar a una escalada de Privilegios a Root, por l
 ![](/assets/images/htb-writeup-mentor/Pasted image 20231221122133.png)
 
 aparentemente es una contraseña en texto claro que se usará para crear un usuario, y se convertirá en **MD5**, intento con ésta contraseña a ver sí se está reutilizando para **James**.
+
 ![](/assets/images/htb-writeup-mentor/Pasted image 20231221122247.png)
+
 Logrando así convertirme en **James**.
 
 # Escalada de Privilegios #3 
@@ -263,6 +283,8 @@ ___
 
 listé como **James** los **SUDOERS**.
 ![](/assets/images/htb-writeup-mentor/Pasted image 20231221122407.png)
+
 viendo qué puedo ejecutar como quién sea una shell de **sh**, por lo que se me ocurre ejecutar una como Root.
+
 ![](/assets/images/htb-writeup-mentor/Pasted image 20231221122528.png)
 Logrando así convertirme en ROOT de la máquina **HOST**.
