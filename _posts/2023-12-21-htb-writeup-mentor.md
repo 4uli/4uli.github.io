@@ -102,6 +102,7 @@ hago **hovering** en donde se envía el correo a ver cómo se maneja la solicitu
 Viendo los métodos, de primera se me ocurre tratar de obtener los usuarios válidos, pero imaginé que sin arrastrar la cookie de sesión válida, no podré hacer ésto, igual lo intenté y no logré nada porque tenía que tener alguna cookie de sesión.
 
 ![](/assets/images/htb-writeup-mentor/Pasted image 20231220115104.png)
+
 y definitivamente, necesitaba la cookie en las cabeceras que aún desconocía el formato, así que opté por aprovecharme que conocía los **endpoint's** y crearme un usuario, usando como intermediario **BurpSuite**.
 
 ![](/assets/images/htb-writeup-mentor/Pasted image 20231220115307.png)
