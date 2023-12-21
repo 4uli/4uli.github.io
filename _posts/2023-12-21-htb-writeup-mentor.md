@@ -41,7 +41,7 @@ Service detection performed. Please report any incorrect results at https://nmap
 
 # Website
 ___
-![[Pasted image 20231220113915.png]]
+![](/assets/images/htb-writeup-mentor/Pasted image 20231220113915.png)
 
 No redirigía a ningún lado, tampoco encontré nada en el código fuente, opté por llevar a cabo una enumeración web de directorios a través de fuzzing, pero tampoco encontré ningún directorio de interés, así que fuí a la enumeración de sub-dominios.
 
@@ -60,7 +60,7 @@ ID           Response   Lines    Word       Chars       Payload
 ```
 
 añadimos éste sub-dominio al **"/etc/hosts"** para el virtual hosting, una vez añadido ingresamos al sub-dominio para ver qué contenía.
-![[Pasted image 20231220114234.png]]
+![](/assets/images/htb-writeup-mentor/Pasted image 20231220114234.png)
 
 No tenía nada en la raíz de la **api**, así que opté por buscar directorios de la api, en éste caso usé **GoBuster** para el descubrimiento.
 ```bash
@@ -75,31 +75,31 @@ Starting gobuster in directory enumeration mode
 
 de primera veo qué hay un directorio "**admin**" en la api con un código de estado **422** similar al de **users**, así que supongo de primeras que no podré entrar a éstos directorios sin autenticación, pero igual entro a curiosear...
 
-![[Pasted image 20231220114522.png]]
+![](/assets/images/htb-writeup-mentor/Pasted image 20231220114522.png)
 
 Y definitivamente, tengo que arrastrar una cookie de sesión, probablemente un JWT como cabecera para poder listar el directorio, así que ingreso al directorio "**/docs**".
 
-![[Pasted image 20231220114747.png]]
+![](/assets/images/htb-writeup-mentor/Pasted image 20231220114747.png)
 
 Logrando ver primeramente qué se puede mandar un correo al usuario "**james**" lo qué me hace pensar qué es un desarrollador, y viendo los métodos & endpoints de la **API**.
 
 hago **hovering** en donde se envía el correo a ver cómo se maneja la solicitud o a quién se envía el correo y logro ver el correo válido de **james**.
-![[Pasted image 20231220114945.png]]
+![](/assets/images/htb-writeup-mentor/Pasted image 20231220114945.png)
 
 Viendo los métodos, de primera se me ocurre tratar de obtener los usuarios válidos, pero imaginé que sin arrastrar la cookie de sesión válida, no podré hacer ésto, igual lo intenté y no logré nada porque tenía que tener alguna cookie de sesión.
-![[Pasted image 20231220115104.png]]
+![](/assets/images/htb-writeup-mentor/Pasted image 20231220115104.png)
 y definitivamente, necesitaba la cookie en las cabeceras que aún desconocía el formato, así que opté por aprovecharme que conocía los **endpoint's** y crearme un usuario, usando como intermediario **BurpSuite**.
 
-![[Pasted image 20231220115307.png]]
+![](/assets/images/htb-writeup-mentor/Pasted image 20231220115307.png)
 
 Logro así crear un usuario con ID 5, así que ahora usaré el **endpoint** de autenticación con **BurpSuite** como intermediario para loguearme y ver la respuesta de la solicitud.
-![[Pasted image 20231220115606.png]]
+![](Pasted image 20231220115606.png)
 
 el servidor como respuesta nos devuelve un **JWT**, ahora sé que tipo de cookie de sesión se está utilizando, copio éste JWT para ver sí podemos ahora sí obtener los usuarios válidos del sistema que intentamos al principio.
 
-![[Pasted image 20231220115905.png]]
+![](/assets/images/htb-writeup-mentor/Pasted image 20231220115905.png)
 Al ver la solicitud en **BurpSuite**, veo qué no está arrastrando el **JWT**, ni está la cabecera para la autorización, así que las añado manualmente...
-![[Pasted image 20231220120747.png]]
+![](/assets/images/htb-writeup-mentor/Pasted image 20231220120747.png)
 
 La respuesta del lado del servidor nos dice qué sólo el **admin** tiene acceso al recurso, entonces ya sé que por detrás se hace una validación para saber quién es el admin.
 
@@ -148,7 +148,7 @@ Me lo traigo a local, y lo ejecuto con los parámetros necesarios, que son la IP
 python snmpbrute.py -t 10.10.11.193 -f /usr/share/SecLists/Discovery/SNMP/common-snmp-community-strings-onesixtyone.txt
 ```
 
-![[Pasted image 20231220123417.png]]
+![](/assets/images/htb-writeup-mentor/Pasted image 20231220123417.png)
 
 Obteniendo la credencial válida para la **v2**, así que intentamos conectarnos con **"snmwalk"**, pero en éste caso usaré una herramienta qué hace lo mismo pero es más rápida, que es "**snmpbulkwalk**".
 ```bash
@@ -157,38 +157,38 @@ snmpbulkwalk -c internal -v2c 10.10.11.193 > snmp_content.txt
 
 metiendo el output en un archivo **.txt** para luego verlo detalladamente ya qué es bastante contenido... buscando servicios internos que estén corriendo encontramos varios qué están ejecutando **python3** y nos muestra su respectivo **PID**.
 
-![[Pasted image 20231220124200.png]]
+![](/assets/images/htb-writeup-mentor/Pasted image 20231220124200.png)
 
 conociendo éstos **PID's**, usamos "**grep**" para ver en el mismo **.txt** que están haciendo...
-![[Pasted image 20231220124339.png]]
+![](/assets/images/htb-writeup-mentor/Pasted image 20231220124339.png)
 
 Logrando ver un script con nombre "**login.py**" en string tiene una cadena, así que de primera se me ocurre probar ésta cadena para intentar autenticarnos como "**james**" en el endpoint de autetinticación.
 
-![[Pasted image 20231220124538.png]]
+![](/assets/images/htb-writeup-mentor/Pasted image 20231220124538.png)
 
 Logrando así obtener el JWT válido para el usuario "**james**", así que ahora intento listar los usuarios...
-![[Pasted image 20231220124744.png]]
+![](/assets/images/htb-writeup-mentor/Pasted image 20231220124744.png)
 
 Viendo usuarios válidos del sistema, pero ciertamente no hay ninguna información comprometedora, así que voy al directorio "**admin**" que antes no tenía acceso...
 
-![[Pasted image 20231220124835.png]]
+![](/assets/images/htb-writeup-mentor/Pasted image 20231220124835.png)
 Descubriendo qué este point de la **API** nos da los **endpoints** de él mismo, así que intento ver el **"backup"**, me devuelve como respuesta qué no acepta el método **GET**, asi que cambio éste por **POST**.
-![[Pasted image 20231220125022.png]]
+![](/assets/images/htb-writeup-mentor/Pasted image 20231220125022.png)
 
 Una vez lo cambio, veo qué espera algo como cuerpo, así que viendo la estructura que usábamos al crear usuarios & autenticarnos, sé que debería ser una estructura **Json**, así que añado a la cabecera para que interpete el **Json** con el **Content-Type**.
 
-![[Pasted image 20231220125514.png]]
+![](/assets/images/htb-writeup-mentor/Pasted image 20231220125514.png)
 
 Usé un cuerpo con una estructura **Json** vacía, y ver la respuesta del lado del servidor.
-![[Pasted image 20231220125544.png]]
+![](/assets/images/htb-writeup-mentor/Pasted image 20231220125544.png)
 
 Está esperando una estructura con "**path**", así que se me ocurre qué cuando le pase una ruta del sistema, la convertirá en un **.bak** comprimido o algo parecido, de primeras se me ocurre inyectar comandos ya que controlamos la ruta qué queremos hacer **backup**.
 
-![[Pasted image 20231220130319.png]]
+![](/assets/images/htb-writeup-mentor/Pasted image 20231220130319.png)
 
 Logrando que dure 5 segundos la respuesta del servidor, sé que estoy controlando el comando, entonces intento hacerme un **ping** a mí mismo para confirmarlo.
-![[Pasted image 20231220130503.png]]
-![[Pasted image 20231220130531.png]]
+![](/assets/images/htb-writeup-mentor/Pasted image 20231220130503.png)
+![](/assets/images/htb-writeup-mentor/Pasted image 20231220130531.png)
 
 Confirmamos que estamos ejecutando comando, entonces sé me ocurre enviarme una **Reverse Shell.**, intenté con Bash pero no tuve éxito, así que intenté con **Netcat** lográndolo.
 
@@ -206,7 +206,7 @@ rlwrap nc -nlvp PORT
 
 y ya estaríamos dentro de la máquina, pero en un contenedor, como vemos...
 
-![[Pasted image 20231221110609.png]]
+![](/assets/images/htb-writeup-mentor/Pasted image 20231221110609.png)
 
 
 # Escalada de Privilegios #1 
@@ -214,7 +214,7 @@ ___
 
 Indagando en el contenedor de la web, en el código fuente estaba la DB con las credenciales en texto claro.
 
-![[Pasted image 20231221111143.png]]
+![](/assets/images/htb-writeup-mentor/Pasted image 20231221111143.png)
 y vemos que lo está corriendo en el **"172.22.01"** que intuyo qué es el **HOST** el real, ya qué esta suele ser la interfaz de Docker.
 
 la DB es una **Postgresql**, y en el contenedor no existe **"psql"** para poder ingresar a ésta base de datos desde consola, así que procederé a hacer un **Remote Port Forwarding** usando **Chisel**, pero primero hago una investigación en google para ver cual suele ser el puerto default de **Postgresql**, encontrando que suele ser el **5432**.
@@ -233,18 +233,18 @@ la DB es una **Postgresql**, y en el contenedor no existe **"psql"** para poder 
 ```bash
 psql -h 127.0.0.1 -U 'postgres' -p 5432
 ```
-![[Pasted image 20231221120515.png]]
+![](/assets/images/htb-writeup-mentor/Pasted image 20231221120515.png)
 
 Ganando acceso a la DB con las credenciales qué vimos anteriormente, y encontrando unas contraseñas HASHEADAS.
-![[Pasted image 20231221121006.png]]
+![](/assets/images/htb-writeup-mentor/Pasted image 20231221121006.png)
 
 ya sabemos la contraseña de James, pero no de **SVC** así que opto por usar **hashes.com** y ver sí podemos crackearla.
 
-![[Pasted image 20231221121115.png]]
+![](/assets/images/htb-writeup-mentor/Pasted image 20231221121115.png)
 
 descubriendo que el Hash era un **MD5**, y la viendo la contraseña en texto claro, por lo que se me ocurre ver sí mediante **SSH** puedo conectarme como **SVC** a la máquina víctima.
 
-![[Pasted image 20231221121427.png]]
+![](/assets/images/htb-writeup-mentor/Pasted image 20231221121427.png)
 y ahora sí estamos en la máquina HOST.
 
 
@@ -252,17 +252,17 @@ y ahora sí estamos en la máquina HOST.
 ___
 
 No encontré nada que podría llevar a una escalada de Privilegios a Root, por lo que intenté entrar a James con las credenciales anteriores que usamos para la **API**, pero no coincidían, opté por seguir indagando como **SVC** y ya que estabamos en la máquina **HOST** le eché un vistazo a la configuración del **snmp**, encontrando lo siguiente en el demonio del servicio.
-![[Pasted image 20231221122133.png]]
+![](/assets/images/htb-writeup-mentor/Pasted image 20231221122133.png)
 
 aparentemente es una contraseña en texto claro que se usará para crear un usuario, y se convertirá en **MD5**, intento con ésta contraseña a ver sí se está reutilizando para **James**.
-![[Pasted image 20231221122247.png]]
+![](/assets/images/htb-writeup-mentor/Pasted image 20231221122247.png)
 Logrando así convertirme en **James**.
 
 # Escalada de Privilegios #3 
 ___
 
 listé como **James** los **SUDOERS**.
-![[Pasted image 20231221122407.png]]
+![](/assets/images/htb-writeup-mentor/Pasted image 20231221122407.png)
 viendo qué puedo ejecutar como quién sea una shell de **sh**, por lo que se me ocurre ejecutar una como Root.
-![[Pasted image 20231221122528.png]]
+![](/assets/images/htb-writeup-mentor/Pasted image 20231221122528.png)
 Logrando así convertirme en ROOT de la máquina **HOST**.
