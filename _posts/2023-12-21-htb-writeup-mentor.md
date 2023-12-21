@@ -1,7 +1,7 @@
 ---
 layout: single
 title: Mentor - Hack The Box
-excerpt: ""
+excerpt: "Para resolver ésta máquina a la hora de la enumeración descubrimos un sub-dominio perteneciente a la API, y escaneando puertos UDP encontramos qué el SNMP estaba abierto, hicimos fuerza bruta en la v1 & v2c descubriendo unas credenciales, credenciales qué servirían para ingresar a la API como el respectivo desarrollador, aprovechádonos de la enumeración previa, ingresamos al point /admin, obteniendo los endpoint de éste mismo point, uno de los point era de /backup, nos aprovechamos de éste endpoint de la API para inyectar comandos debido a su mal desarrollo, logrando así entablarnos una Reverse Shell, y ganando acceso a un contenedor, logrando encontrar información sobre la DB, haciendo un Remote Port Forwarding de éste puerto a nuestro máquina, logrando ver en la DB las credenciales válidas para otro usuario del sistema, el cual tenía como permisos SUDOERS ejecutar un sh como quién fuera, y ejecuté un sh como ROOT. "
 date: 2023-12-21
 classes: wide
 header:
@@ -22,9 +22,10 @@ tags:
   - Chisel Tunnel
   - Postgresql Service Enumeration
   - Abusing sudoers
-
-
 ---
+
+![](/assets/images/htb-writeup-mentor/mentor_logo.png)
+Para resolver ésta máquina a la hora de la enumeración descubrimos un sub-dominio perteneciente a la API, y escaneando puertos UDP encontramos qué el SNMP estaba abierto, hicimos fuerza bruta en la v1 & v2c descubriendo unas credenciales, credenciales qué servirían para ingresar a la API como el respectivo desarrollador, aprovechádonos de la enumeración previa, ingresamos al point /admin, obteniendo los endpoint de éste mismo point, uno de los point era de /backup, nos aprovechamos de éste endpoint de la API para inyectar comandos debido a su mal desarrollo, logrando así entablarnos una Reverse Shell, y ganando acceso a un contenedor, logrando encontrar información sobre la DB, haciendo un Remote Port Forwarding de éste puerto a nuestro máquina, logrando ver en la DB las credenciales válidas para otro usuario del sistema, el cual tenía como permisos SUDOERS ejecutar un sh como quién fuera, y ejecuté un sh como ROOT. 
 # PortScan
 ___
 
