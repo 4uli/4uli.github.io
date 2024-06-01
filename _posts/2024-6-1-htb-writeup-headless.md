@@ -5,7 +5,7 @@ excerpt: ""
 date: 2024-6-1
 classes: wide
 header:
-  teaser: /assets/images/htb-writeup-headless/headless1_logo.png
+  teaser: /assets/images/htb-writeup-headless/headless_logo.png
   teaser_home_page: true
   icon: /assets/images/hackthebox.webp
 categories:
@@ -15,7 +15,7 @@ tags:
 
 ---
 
-![](/assets/images/htb-writeup-headless/headless1_logo.png)
+![](/assets/images/htb-writeup-headless/headless_logo.png)
 
 # PortScan
 ```bash
