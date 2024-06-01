@@ -1,7 +1,7 @@
 ---
 layout: single
 title: HeadLess - Hack The Box
-excerpt: ""
+excerpt: "Para resolver esta máquina, iniciamos un descubrimiento de directorios mediante Fuzzing, encontrando así un directorio con una Dashboard en el cual debemos arrastrar una cookie de admin para poder ver su contenido, robamos esta cookie de sesión debido a qué cuando se intenta llevar a cabo un XXS en la petición de soporte, envía un informe al administrador con la información de nuestro navegador, asi que bypasseamos la blacklist a la hora del XXS usando el payload en la cabecera user-agent, obteniendo el XSS éxitosamente, y robando la cookie, escalamos privilegios aprovechándonos de los SUDOERS en un binario que llama a un script en Bash con su ruta relativa, llevando a cabo un Path Hijacking.
 date: 2024-6-1
 classes: wide
 header:
@@ -11,8 +11,11 @@ header:
 categories:
   - hackthebox
 tags:
-  - subdomain enumeration
-
+  - XSS
+  - XSS filter evasion
+  - OS command injection
+  - abusing sudoers
+  - PATH Hijacking
 ---
 
 ![](/assets/images/htb-writeup-headless/headless_logo.png)
