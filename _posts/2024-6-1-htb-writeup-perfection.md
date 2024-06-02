@@ -1,7 +1,7 @@
 ---
 layout: single
 title: Perfection - Hack The Box
-excerpt: ""
+excerpt: "Para resolver esta máquina, nos aprovechamos de la calculadora y de que podemos controlar el input, pudiendo llevar a cabo un SSTI, esto a pesar de estar ciertamente un poco sanitizado, bypaseamos esto con CRLF, logrando así ejecutar comandos para entablarnos una Reverse Shell, para posterior a ello escalar privilegios indagando en el sistema operativo, encontrando un correo para el usuario de sistema actual, dándonos una pista de cómo podría ser la contraseña, encontramos una DB sqlite3, con una tabla que posee la contraseña hasheada para algunos usuarios, aplicamos fuerza bruta al hash del usuario que estamos actualmente, esto con la pista del correo y obtenemos la contraseña correcta, pudiendo así convertirnos en Root gracias a que el usuario tenía todos los permisos."
 date: 2024-6-1
 classes: wide
 header:
@@ -11,11 +11,17 @@ header:
 categories:
   - hackthebox
 tags:
-  - XSS
+  - SSTI
+  - CRLF
+  - CRLF > RCE
+  - hash cracking
+  - hashcat cracking
   
 ---
 
 ![](/assets/images/htb-writeup-perfection/perfection_logo.png)
+
+Para resolver esta máquina, nos aprovechamos de la calculadora y de que podemos controlar el input, pudiendo llevar a cabo un SSTI, esto a pesar de estar ciertamente un poco sanitizado, bypaseamos esto con CRLF, logrando así ejecutar comandos para entablarnos una Reverse Shell, para posterior a ello escalar privilegios indagando en el sistema operativo, encontrando un correo para el usuario de sistema actual, dándonos una pista de cómo podría ser la contraseña, encontramos una DB sqlite3, con una tabla que posee la contraseña hasheada para algunos usuarios, aplicamos fuerza bruta al hash del usuario que estamos actualmente, esto con la pista del correo y obtenemos la contraseña correcta, pudiendo así convertirnos en Root gracias a que el usuario tenía todos los permisos.
 
 # PortScan
 ____
