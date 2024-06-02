@@ -114,8 +114,11 @@ viendo así los usuarios & un **hash**, que seguramente sea la contraseña, tene
 ```
 
 **-a 3:** este parámetro indica que el ataque será de modo "mascara."
+
 **-m 1400**: indica el modo del hash, en este caso bcrypt.
+
 **-hash.txt:** aquí dentro esta el hash que vimos en la base de datos.
+
 **-"susan_nasus_?d?d?d?d?d?d?d?d?d"** : indica el inicio de la posible contraseña con la pista del correo, que es el nombre normal, al revés, y luego 9 posibles números.
 
 ![](/assets/images/htb-writeup-perfection/cracking.png)
