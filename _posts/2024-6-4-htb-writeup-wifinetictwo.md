@@ -224,7 +224,7 @@ iwlist wlan0 scan
 
 ![](/assets/images/htb-writeup-wifinetictwo/Pasted image 20240604100943.png)
 
-que por el nombre del **ESSID** intuyo que es un Router, y por el protocolo de seguridad **WPA2 V1** podría aprovecharme de esto para explotar una vulnerabilidad que hay en el intercambio de claves de protocolos **WPS**, perimiéndome ver la clave en texto claro del WIFI.
+que por el nombre del **ESSID** intuyo que es un Router, y por el protocolo de seguridad **WPA2 V1** podría aprovecharme de esto para explotar una vulnerabilidad que hay en el intercambio de claves de protocolos **WPS**, permitiéndome ver la clave en texto claro del WIFI.
 
 Para ello utilizaremos la herramienta **OneShot** para llevar a cabo la explotación.
 En nuestra máquina, obtenemos el exploit.
@@ -243,7 +243,9 @@ oneshot.py -b 02:00:00:00:01:00 -i wlan0 -K
 ```
 
 **-b:** Indicamos el MAC del ADDRES, que lo vimos con "**iwlist**".
+
 **-i:** Indicamos la interfaz de la RED WIFI.
+
 **-K:** Indicamos el tipo de ataque.
 
 obteniendo el **PIN** & **contraseña** de la Red Wifi.
