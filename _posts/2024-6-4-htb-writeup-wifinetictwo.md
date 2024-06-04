@@ -1,3 +1,21 @@
+---
+layout: single
+title: WifineticTwo - Hack The Box
+excerpt: ""
+date: 2024-6-4
+classes: wide
+header:
+  teaser: /assets/images/htb-writeup-wifinetictwo/wifinetictwo_logo.png
+  teaser_home_page: true
+  icon: /assets/images/hackthebox.webp
+categories:
+  - hackthebox
+tags:
+  - SSTI
+
+---
+
+![](/assets/images/htb-writeup-wifinetictwo/wifinetictwo_logo.png)
 
 # PortScan
 
@@ -108,7 +126,7 @@ Nos reporta tan sólo dos puertos abiertos, la versión **SSH** no es vulnerable
 
 # Sitio Web
 
-![[Pasted image 20240604090513.png]]
+![](/assets/images/htb-writeup-wifinetictwo/Pasted image 20240604090513.png)
 
 Me da por curiosear de "**¿qué es OpenPLC?**", descubriendo qué es una amalgama de proyectos de código abierto para ofrecer un PLC funcional tanto el software como hardware, como una alternativa de bajo costo para la automatización y la investigación.
 
@@ -118,7 +136,7 @@ username:openplc
 password:openplc
 ```
 
-![[Pasted image 20240604090952.png]]
+![](/assets/images/htb-writeup-wifinetictwo/Pasted image 20240604090952.png)
 
 logrando acceso al **OpenPLC**, ya en este punto sabiendo las credenciales podría utilizar el exploit mencionado más arriba [ESTE](https://github.com/thewhiteh4t/cve-2021-31630) para de manera automatizada obtener nuestra Reverse Shell, pero yo lo haré manual...
 
@@ -180,15 +198,15 @@ nc -nlvp PORT
 
 2. Guardamos el código cambiado. **(En Blank Linux)**
 
-![[Pasted image 20240604095058.png]]
-
+![](/assets/images/htb-writeup-wifinetictwo/Pasted image 20240604095058.png)
 
 esto procederá a compilar el código, y sí pusimos todo bien lo hará correctamente, ahora volvemos al **Dashboard**.
 
 3. Iniciamos el PLC.
-![[Pasted image 20240604095240.png]]
+   
+![](/assets/images/htb-writeup-wifinetictwo/Pasted image 20240604095240.png)
 
-![[Pasted image 20240604095320.png]]
+![](/assets/images/htb-writeup-wifinetictwo/Pasted image 20240604095320.png)
 
 Hemos entablado conexión perfectamente, ya sólo quedaría darle [Tratamiento a la TTY](https://4uli.github.io/tratamiento-tty/#)
 
@@ -196,14 +214,14 @@ Hemos entablado conexión perfectamente, ya sólo quedaría darle [Tratamiento a
 
 Vemos que estamos como **ROOT**, lo cual de primera me da la impresión que estamos en un contenedor, pero hago "**ifconfig**", descubriendo que estamos en una máquina que no es la objetivo, por lo que tendremos que hacer movimiento lateral para pasar a esta máquina, y también descubrimos una interfaz wifi, lo cual de primeras me parece raro, ya qué esto no se suele ver en CTF's en HTB.
 
-![[Pasted image 20240604100509.png]]
+![](/assets/images/htb-writeup-wifinetictwo/Pasted image 20240604100509.png)
 
 me da por curiosear en esta interfaz "**wlan0**" con la herramienta "**iwlist**"
 ```bash
 iwlist wlan0 scan
 ```
 
-![[Pasted image 20240604100943.png]]
+![](/assets/images/htb-writeup-wifinetictwo/Pasted image 20240604100943.png)
 
 que por el nombre del **ESSID** intuyo que es un Router, y por el protocolo de seguridad **WPA2 V1** podría aprovecharme de esto para explotar una vulnerabilidad que hay en el intercambio de claves de protocolos **WPS**, perimiéndome ver la clave en texto claro del WIFI.
 
@@ -228,7 +246,7 @@ oneshot.py -b 02:00:00:00:01:00 -i wlan0 -K
 **-K:** Indicamos el tipo de ataque.
 
 obteniendo el **PIN** & **contraseña** de la Red Wifi.
-![[Pasted image 20240604104402.png]]
+![](/assets/images/htb-writeup-wifinetictwo/Pasted image 20240604104402.png)
 
 Me conecto a la red con las credenciales con la herramienta **"wpa"**, pero debemos hacer unos ajustes antes de...
 
@@ -282,12 +300,12 @@ y con esto estaríamos conectado a la red "**plcrouter**", podemos corroborarlo 
 
 ahora que estamos conectados al wifi de "**plcrouter**", hacemos un barrido con "**arp -a**" para un escaneo rápido, descubriendo esto...
 
-![[Pasted image 20240604110852.png]]
+![](/assets/images/htb-writeup-wifinetictwo/Pasted image 20240604110852.png)
 
 un **gateway**, es decir un punto de acceso entre dos redes... indagué en internet buscando posibles credenciales por defecto para router con sistema **PLC**, encontrando esta web https://www.192-168-1-1-ip.co/plc-systems/routers/1340/
 
 qué nos dice que las credenciales por defecto son usuario "**admin**" y contraseña "**admin**", esto no funcionó, pero probé con usuario "**root**" logrando así acceso esto por **SSH**, y con la **IP** evidentemente del **gateway**, para pasar este punto de acceso.
 
-![[Pasted image 20240604111754.png]]
+![](/assets/images/htb-writeup-wifinetictwo/Pasted image 20240604111754.png)
 
 NOTA: Esto desde la máquina víctima, ya qué sólo ellas se pueden ver en la Red, desde mi máquina atacante evidentemente no.
