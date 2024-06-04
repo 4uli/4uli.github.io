@@ -306,8 +306,7 @@ ahora que estamos conectados al wifi de "**plcrouter**", hacemos un barrido con 
 
 ![](/assets/images/htb-writeup-wifinetictwo/Pasted image 20240604110852.png)
 
-un **gateway**, es decir un punto de acceso entre dos redes... indagué en internet buscando posibles credenciales por defecto para router con sistema **PLC**, encontrando esta web https://www.192-168-1-1-ip.co/plc-systems/routers/1340/
-
+un **gateway**, es decir un punto de acceso entre dos redes... indagué en internet buscando posibles credenciales por defecto para router con sistema **PLC**, encontrando [ESTA WEB](https://www.192-168-1-1-ip.co/plc-systems/routers/1340/)
 qué nos dice que las credenciales por defecto son usuario "**admin**" y contraseña "**admin**", esto no funcionó, pero probé con usuario "**root**" logrando así acceso esto por **SSH**, y con la **IP** evidentemente del **gateway**, para pasar este punto de acceso.
 
 ![](/assets/images/htb-writeup-wifinetictwo/Pasted image 20240604111754.png)
