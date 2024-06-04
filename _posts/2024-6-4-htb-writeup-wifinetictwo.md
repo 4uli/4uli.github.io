@@ -255,7 +255,8 @@ obteniendo el **PIN** & **contraseña** de la Red Wifi.
 Me conecto a la red con las credenciales con la herramienta **"wpa"**, pero debemos hacer unos ajustes antes de...
 
 1. Vamos a **"/etc/wpa_supplicant/"** de la máquina víctima nos creamos un archivo con nombre  "**wpa_supplicant-wlan0.conf**"
-	```bash
+   
+```bash
 vim wpa_supplicant-wlan0.conf
 ```
 
