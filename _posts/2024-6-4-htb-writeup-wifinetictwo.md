@@ -246,6 +246,7 @@ oneshot.py -b 02:00:00:00:01:00 -i wlan0 -K
 **-K:** Indicamos el tipo de ataque.
 
 obteniendo el **PIN** & **contraseña** de la Red Wifi.
+
 ![](/assets/images/htb-writeup-wifinetictwo/Pasted image 20240604104402.png)
 
 Me conecto a la red con las credenciales con la herramienta **"wpa"**, pero debemos hacer unos ajustes antes de...
@@ -272,7 +273,7 @@ network={
 ```
 
 2. Nos creamos este archivo "**/etc/systemd/network/25-wlan.network**":
-```nvim
+```bash
 vim /etc/systemd/network/25-wlan.network
 ```
 	
