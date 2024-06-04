@@ -1,7 +1,7 @@
 ---
 layout: single
 title: WifineticTwo - Hack The Box
-excerpt: ""
+excerpt: "Para resolver esta máquina descubrimos que el servicio WEB de OpenPLC contiene las credenciales por defecto, logrando ingresar e inyectar código malicoso para obtener acceso remoto a la máquina, logramos acceso como Root, pero no de la máquina objetivo, así que tenemos que hacer un movimiento lateral para saltar a esa máquina, aprovechándonos de que tenemos un interfaz wlan, la cual al escanear contiene el PIN por defecto, pudiendo así obtener la contraseña WI-FI en texto claro, nos conectamos al WI-FI, para descubrir un punto de acceso a otra máquina & por credenciales débiles logramos entrar."
 date: 2024-6-4
 classes: wide
 header:
@@ -11,16 +11,21 @@ header:
 categories:
   - hackthebox
 tags:
-  - SSTI
+  - CVE-2021-31630
+  - OpenPLC 3 - RCE (authenticated)
+  - Abusing an AP's WPS
+  - lateral movement abusing WPS
 
 ---
 
 ![](/assets/images/htb-writeup-wifinetictwo/wifinetictwo_logo.png)
 
+Para resolver esta máquina descubrimos que el servicio WEB de OpenPLC contiene las credenciales por defecto, logrando ingresar e inyectar código malicoso para obtener acceso remoto a la máquina, logramos acceso como Root, pero no de la máquina objetivo, así que tenemos que hacer un movimiento lateral para saltar a esa máquina, aprovechándonos de que tenemos un interfaz wlan, la cual al escanear contiene el PIN por defecto, pudiendo así obtener la contraseña WI-FI en texto claro, nos conectamos al WI-FI, para descubrir un punto de acceso a otra máquina & por credenciales débiles logramos entrar.
+
 # PortScan
 ____
 
-```bash
+```java
 # Nmap 7.94SVN scan initiated Mon Jun  3 19:18:11 2024 as: nmap -sCV -p22,8080 -oN targeted 10.10.11.7
 Nmap scan report for 10.10.11.7
 Host is up (0.074s latency).
