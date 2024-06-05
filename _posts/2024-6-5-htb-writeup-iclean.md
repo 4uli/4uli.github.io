@@ -50,7 +50,7 @@ Vemos que tenemos en la página un apartado para solicitar un presupuesto para l
 
 ![](/assets/images/htb-writeup-iclean/Pasted image 20240605163446.png)
 
-Intercepto esta solicitud con **Burpsuite** para llevar a cabo intento de posible falla de seguridad... de primero se me ocurre **STTI**, intenté varias maneras pero no logré nada, seguí intentando...
+Intercepto esta solicitud con **Burpsuite** para llevar a cabo intentos de posibles vulnerabilidades.. de primero se me ocurre **STTI**, intenté varias maneras pero no logré nada, seguí intentando...
 
 
 Finalmente, pude llevar a cabo un **XXS** tras varios intentos fallidos, ya que la **DATA** tramitada para las variables debe ser **URLencodeada**, y la respuesta del servidor no muestra nada para guiarnos, así que fue a ciegas mediante un servidor en local con Python, para ver sí lográbamos llevar a cabo la **XXS**.
