@@ -12,8 +12,6 @@ categories:
   - hackthebox
 tags:
   - CVE-2021-31630
-
-
 ---
 
 ![](/assets/images/htb-writeup-iclean/iclean_logo.png)
