@@ -11,11 +11,20 @@ header:
 categories:
   - hackthebox
 tags:
-  - CVE-2021-31630
+  - XSS
+  - XSS session hijacking
+  - SSTI
+  - db creds
+  - hash cracking
+  - abusing sudoers > qpdf
 ---
 
 ![](/assets/images/htb-writeup-iclean/iclean_logo.png)
+
+Para resolver esta máquina, interceptamos la solicitud de inicio de sesión, logrando llevar a cabo un XSS para robar una cookie de sesión válida. Con esta cookie, ingresamos al dashboard, que contiene un sistema de facturación que genera un código QR y un enlace. Al utilizar el enlace, se crea un escaneable, cuya solicitud interceptamos para poder inyectar SSTI. Posteriormente, logramos establecer una Reverse Shell. En el código fuente de la web, descubrimos en texto claro el usuario y la contraseña de la base de datos, encontrando así las credenciales de un usuario válido que desencriptamos. Finalmente, abusamos de los permisos SUDOERS del binario 'qpdf' para convertirnos en ROOT.
+
 # PortScan
+____
 
 ```java
 # Nmap 7.94SVN scan initiated Tue Jun  4 16:55:14 2024 as: nmap -sCV -p22,80 -oN targeted 10.10.11.12
@@ -40,7 +49,7 @@ Service detection performed. Please report any incorrect results at https://nmap
 
 ![](/assets/images/htb-writeup-iclean/Pasted image 20240605163238.png)
 
-Vemos un **nav** con su respectivo **Login**, intenté ingresar con credenciales por defecto, incluso llevar a cabo un **STTI** blind ya qué por detrás está corriendo un **python**, entre otras técnicas para poder bypassear o ejecutar código a través del Login con **Burpsuite**, pero no logré nada, seguí indagando en la página principal.
+Vemos un **nav** con su respectivo **Login**, intenté ingresar con credenciales por defecto, incluso llevar a cabo un **SSTI** blind ya qué por detrás está corriendo un **python**, entre otras técnicas para poder bypassear o ejecutar código a través del Login con **Burpsuite**, pero no logré nada, seguí indagando en la página principal.
 
 ![](/assets/images/htb-writeup-iclean/Pasted image 20240605163407.png)
 
@@ -48,7 +57,7 @@ Vemos que tenemos en la página un apartado para solicitar un presupuesto para l
 
 ![](/assets/images/htb-writeup-iclean/Pasted image 20240605163446.png)
 
-Intercepto esta solicitud con **Burpsuite** para llevar a cabo intentos de posibles vulnerabilidades.. de primero se me ocurre **STTI**, intenté varias maneras pero no logré nada, seguí intentando...
+Intercepto esta solicitud con **Burpsuite** para llevar a cabo intentos de posibles vulnerabilidades.. de primero se me ocurre **SSTI**, intenté varias maneras pero no logré nada, seguí intentando...
 
 
 Finalmente, pude llevar a cabo un **XXS** tras varios intentos fallidos, ya que la **DATA** tramitada para las variables debe ser **URLencodeada**, y la respuesta del servidor no muestra nada para guiarnos, así que fue a ciegas mediante un servidor en local con Python, para ver sí lográbamos llevar a cabo la **XXS**.
@@ -114,7 +123,7 @@ veo que ahora podemos generar un Escaneable con el link del QR, lo pongo...
 
 ![](/assets/images/htb-writeup-iclean/Pasted image 20240605171702.png)
 
-generándose esto, me da por curiosear aquí ya que veo números para tratar de llevar a cabo un **STTI**, lo intercepto con **BurpSuite**.
+generándose esto, me da por curiosear aquí ya que veo números para tratar de llevar a cabo un **SSTI**, lo intercepto con **BurpSuite**.
 
 ![](/assets/images/htb-writeup-iclean/Pasted image 20240605171802.png)
 
@@ -122,7 +131,7 @@ en esa **DATA** pruebo en la variable del **QR** inyectar una operación básica
 ![](/assets/images/htb-writeup-iclean/Pasted image 20240605172955.png)
 ![](/assets/images/htb-writeup-iclean/Pasted image 20240605173011.png)
 
-y estamos llevando a cabo un **STTI** exitosamente, pero lo está convirtiendo en **base64**, ya sabiendo esto podría entablarme una **Reverse Shell** de la siguiente manera:
+y estamos llevando a cabo un **SSTI** exitosamente, pero lo está convirtiendo en **base64**, ya sabiendo esto podría entablarme una **Reverse Shell** de la siguiente manera:
 
 1. Nos creamos un archivo con nombre "**revshell**", con esto dentro:
 ```bash
