@@ -150,7 +150,7 @@ nc -nlvp PORT
 
 ![](/assets/images/htb-writeup-iclean/Pasted image 20240605173635.png)
 
-logrando acceso a la máquina, sólo quedaría darle [Tratamiento a la TTY]()(https://4uli.github.io/tratamiento-tty/#).
+logrando acceso a la máquina, sólo quedaría darle [Tratamiento a la TTY](https://4uli.github.io/tratamiento-tty/#).
 
 
 # Escalada de Privilegios #1 
