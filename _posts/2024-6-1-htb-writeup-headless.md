@@ -13,6 +13,7 @@ categories:
 tags:
   - XSS
   - XSS filter evasion
+  - XSS session hijacking
   - OS command injection
   - abusing sudoers
   - PATH Hijacking
