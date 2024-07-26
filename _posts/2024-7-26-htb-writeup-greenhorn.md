@@ -173,6 +173,7 @@ nc -nlvp PORT
 5. Subimos el **.zip** en  la ruta **/admin.php?action=installmodule**:
 
 y así recibiríamos la Shell:
+
 ![](/assets/images/htb-writeup-greenhorn/Pasted image 20240726110108.png)
 
 ya quedaría darle Tratamiento a la TTY, sino sabes [((HAZ CLICK AQUI))](https://4uli.github.io/tratamiento-tty/#)
