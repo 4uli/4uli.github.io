@@ -140,7 +140,7 @@ Descubriendo lo que parece ser el código fuente de la aplicación, así que emp
 
 Descubriendo en el "**Login.php**", que utiliza un script en "**/data/settings/pass.php**" para verificar que esa es la contraseña de admin, y la contraseña que se ponga como input se convierte en un hash **sha512** para corroborar que esa es la contraseña correcta, asi que voy a ver la contraseña de admin en **data**...
 
-![](Pasted image 20240726104837.png)
+![](/assets/images/htb-writeup-greenhorn/Pasted image 20240726104837.png)
 
 definitivamente es un hash, así que se me ocurre usar **John The Ripper** para probarlo con el diccionario de **Rockyou.txt** a ver si el hash coincide con alguna contraseña de ese diccionario...
 
