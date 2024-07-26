@@ -1,7 +1,7 @@
 ---
 layout: single
 title: "GreenHorn - Hack The Box"
-excerpt: ""
+excerpt: "Para resolver esta máquina, comenzamos aprovechando que el puerto :3000 expone Gitea con el código fuente de la aplicación. Esto nos permitió obtener el hash SHA-512 de la contraseña del usuario admin para el CMS. Usamos John the Ripper para descifrar contraseñas que coincidieran con este hash, lo que nos permitió acceder al panel de administración del CMS.Una vez dentro, explotamos una vulnerabilidad en la versión del CMS Pluck 4.7.18 (CVE-2023-50564), que es una vulnerabilidad de Ejecución Remota de Código (RCE). Esta vulnerabilidad nos permitió ganar acceso a la máquina.Luego, escalamos privilegios utilizando la misma contraseña obtenida anteriormente para un usuario de bajo nivel llamado Junior. Finalmente, logramos obtener privilegios de root recuperando una contraseña censurada en una imagen de un PDF con la herramienta Depix."
 date: 2024-06-05
 classes: wide
 header:
@@ -11,17 +11,20 @@ header:
 categories:
   - hackthebox
 tags:
-  - XSS
-  - XSS session hijacking
-  - SSTI
-  - db creds
-  - hash cracking
+  - CMS Pluck
+  - CVE-2023-50564
+  - CMS exploitation > RCE
+  - filtration source code
+  - Gitea Exposed
   - abusing sudoers > qpdf
+  - Cracking Hash sha512
+  - Password Reuse (User Pivoting)
+  - using Depix to Recovers passwords from pixelized screenshots
 ---
 
 ![](/assets/images/htb-writeup-greenhorn/greenhorn_logo.png)
 
-Para resolver esta máquina, interceptamos la solicitud de inicio de sesión, logrando llevar a cabo un XSS para robar una cookie de sesión válida. Con esta cookie, ingresamos al dashboard, que contiene un sistema de facturación que genera un código QR y un enlace. Al utilizar el enlace, se crea un escaneable, cuya solicitud interceptamos para poder inyectar SSTI. Posteriormente, logramos establecer una Reverse Shell. En el código fuente de la web, descubrimos en texto claro el usuario y la contraseña de la base de datos, encontrando así las credenciales de un usuario válido que desencriptamos. Finalmente, abusamos de los permisos SUDOERS del binario 'qpdf' para convertirnos en ROOT.
+Para resolver esta máquina, comenzamos aprovechando que el puerto :3000 expone Gitea con el código fuente de la aplicación. Esto nos permitió obtener el hash SHA-512 de la contraseña del usuario admin para el CMS. Usamos John the Ripper para descifrar contraseñas que coincidieran con este hash, lo que nos permitió acceder al panel de administración del CMS.Una vez dentro, explotamos una vulnerabilidad en la versión del CMS Pluck 4.7.18 (CVE-2023-50564), que es una vulnerabilidad de Ejecución Remota de Código (RCE). Esta vulnerabilidad nos permitió ganar acceso a la máquina.Luego, escalamos privilegios utilizando la misma contraseña obtenida anteriormente para un usuario de bajo nivel llamado Junior. Finalmente, logramos obtener privilegios de root recuperando una contraseña censurada en una imagen de un PDF con la herramienta Depix.
 
 
 # PortScan
