@@ -231,7 +231,7 @@ python3 depix.py \
 
 
 una vez finalice, nos dará un **output.png** el cual sera una "Reconstrucción" de la **"posible"** contraseña.
-![](Pasted image 20240726112549.png)
+![](/assets/images/htb-writeup-greenhorn/Pasted image 20240726112549.png)
 
 intento escalar a **Root** con estas credenciales y...
 
